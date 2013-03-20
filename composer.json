@@ -1,0 +1,9 @@
+{
+    "name": "samson/data-grid-bundle",
+    "autoload": {
+        "psr-0": {
+            "Samson\\Bundle\\DataGridBundle": ""
+        }
+    },
+    "target-dir": "Samson/Bundle/DataGridBundle"
+}

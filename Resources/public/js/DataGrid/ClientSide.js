@@ -2,7 +2,8 @@ DataGrid.ClientSide = DataGrid.extend({
     
     init: function(columns, data, options) {
         var options = $.extend({
-            editable: false,
+            inline: true,
+            allowEdit: false,
             editRoute: null,
             allowCreate: false,
             createRoute: null,

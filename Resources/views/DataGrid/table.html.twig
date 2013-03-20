@@ -18,16 +18,19 @@ Results per page: <select data-bind="value: pageSize">
             <!-- ko foreach: columns -->
             <th data-bind="css: classes, click: sort, template: headCellTemplate"></th>
             <!-- /ko -->
-            <!-- ko if: $root.editable -->
-            <th>
-            <!-- ko if: $root.allowCreate -->
-            <button class="icon-only icon-plus" data-bind="click: loadCreateForm"></button>
-            <!-- /ko -->
-            </th>
-            <!-- ko if: $root.allowDelete -->
-            <th></th>
-            <!-- /ko -->
-            <!-- /ko -->
+                <!-- ko if: $root.allowCreate -->
+                <th>
+                    <!-- ko if: $root.inline -->
+                    <button class="icon-only icon-plus" data-bind="click: loadCreateForm"></button>
+                    <!-- /ko -->
+                    <!-- ko ifnot: $root.inline -->
+                    <a data-bind="attr: { href: $root.createCreateUrl() }" ><button class="icon-only icon-plus"></button></a>
+                    <!-- /ko -->
+                </th>
+                <!-- /ko -->
+                <!-- ko if: $root.allowDelete -->
+                <th></th>
+                <!-- /ko -->
         </tr>
     </thead>
     <tbody data-bind="template: { name: 'datagrid-row', foreach: $root.visibleRows, as: 'row'/*, afterAdd: function(domNode) { $(domNode).hide().fadeIn(); }, beforeRemove: function(domNode) { $(domNode).fadeOut('fast', function() { $(domNode).remove(); }) }*/ }">
@@ -57,14 +60,17 @@ Results per page: <select data-bind="value: pageSize">
         <!-- ko foreach: { data: $root.columns, as: 'column' } -->
             <!-- ko template: { name: column.bodyCellTemplate, data: { column: column, row: row, data: row.getColumnData(column.name) } } --><!-- /ko -->
         <!-- /ko -->
-        <!-- ko if: $root.editable -->
+        <!-- ko if: $root.allowEdit -->
         <td>
             <!-- ko if: editing -->
             <button type="submit" data-bind="click: saveForm, text: savingForm() ? 'Saving...' : 'Save'"></button>
             <div style="display: none" data-bind="html: hiddenFields"></div>
             <!-- /ko -->
-            <!-- ko if: !editing() -->
+            <!-- ko if: !editing() && $root.inline -->
             <button class="icon-only icon-edit" data-bind="click: loadForm"></button>
+            <!-- /ko -->
+            <!-- ko ifnot: $root.inline -->
+            <a data-bind="attr: { href: createEditUrl() }" ><button class="icon-only icon-edit"></button></a>
             <!-- /ko -->
         </td>
         <!-- /ko -->

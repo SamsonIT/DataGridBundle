@@ -1,7 +1,7 @@
 var DataGrid = Class.extend({
     rows: null,
     columns: null,
-    editable: false,
+    allowEdit: false,
     editRoute: null,
     allowCreate: false,
     createRoute: null,
@@ -18,8 +18,9 @@ var DataGrid = Class.extend({
 
     init: function(columns, data, options) {
         this.sorting = ko.observable({ column: null, inverse: false });
-
-        this.editable = options.editable;
+        
+        this.inline = options.inline;
+        this.allowEdit = options.allowEdit;
         this.editRoute = options.editRoute;
         this.allowCreate = options.allowCreate;
         this.createRoute = options.createRoute;
@@ -70,7 +71,11 @@ var DataGrid = Class.extend({
 
         this.rows.push(row);
     },
-
+            
+    createCreateUrl: function() {
+        return Routing.generate(this.createRoute, { _format: this.inline ? 'json' : 'html' } );
+    },
+            
     sort: function(column) {
         if (!this.sortable || !column.sortable) {
             return;
@@ -199,20 +204,17 @@ var Row = Class.extend({
     },
     
     getSaveUrl: function() {
-        return this.isNew() ? this.createCreateUrl() : this.createEditUrl();
+        return this.isNew() ? this.grid.createCreateUrl() : this.createEditUrl();
+    },
+            
+    createEditUrl: function() {
+        return Routing.generate(this.grid.editRoute, { id: this.getColumnData('id'), _format: this.grid.inline ? 'json' : 'html' } );
     },
     
-    createEditUrl: function() {
-        return Routing.generate(this.grid.editRoute, { id: this.getColumnData('id'), _format: 'json' } );
-    },
-
-    createCreateUrl: function() {
-        return Routing.generate(this.grid.createRoute, { _format: 'json' } );
-    },
-
     createDeleteUrl: function() {
         return Routing.generate(this.grid.deleteRoute, { id: this.getColumnData('id'), _format: 'json' } );
     },
+            
             
     deleteRow: function() {
         var self = this;

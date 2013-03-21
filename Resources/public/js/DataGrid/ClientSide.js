@@ -10,7 +10,7 @@ DataGrid.ClientSide = DataGrid.extend({
             allowDelete: false,
             deleteRoute: null,
             sortable: true,
-            pageSize: 10,
+            pageSize: DataGrid.defaults.pageSize,
             page: 1,
             enableFilter: true,
             enablePageSizeSelector: false

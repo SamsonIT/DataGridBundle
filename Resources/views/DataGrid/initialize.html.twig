@@ -1,3 +1,6 @@
 {% javascripts 'bundles/samsondatagrid/js/*.js' 'bundles/samsondatagrid/js/*/*.js' output='js/datagrid.js' %}
-    <script type="text/javascript" src="{{ asset_url }}"></script>
+    <script src="{{ asset_url }}"></script>
 {% endjavascripts %}
+<script>
+    DataGrid.defaults = {{ defaults|json_encode|raw }};
+</script>

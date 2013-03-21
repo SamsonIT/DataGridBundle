@@ -24,5 +24,9 @@ class SamsonDataGridExtension extends Extension
 
         $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.xml');
+        
+        $container->setParameter('samson_data_grid.defaults', array(
+            'pageSize' => $config['results_per_page']
+        ));
     }
 }

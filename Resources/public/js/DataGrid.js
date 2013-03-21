@@ -73,6 +73,10 @@ var DataGrid = Class.extend({
         this.rows.push(row);
     },
             
+    pageHref: function() {
+        return '#';
+    },
+            
     createCreateUrl: function() {
         return Routing.generate(this.createRoute, { _format: this.inline ? 'json' : 'html' } );
     },

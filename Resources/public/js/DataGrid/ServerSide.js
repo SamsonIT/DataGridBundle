@@ -89,6 +89,10 @@ DataGrid.ServerSide = DataGrid.extend({
         this.loadResults({ page: page });
     },
             
+    pageHref: function(page) {
+        return Routing.generate(this.indexRoute, $.extend(this.getUrlArguments(), { page: page }));
+    },
+            
     getUrlArguments: function(format) {
         return {
             _format: format || 'html',

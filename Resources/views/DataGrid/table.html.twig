@@ -47,11 +47,11 @@ Results per page: <select data-bind="value: pageSize">
 </table>
 <div class="result-info" data-bind="text: resultsText"></div>
 <nav class="pagination">
-<a class="previous" href="#" data-bind="css: { disabled: page() == 1 }, click: function() { setPage(page() - 1); }">previous</a>
+<a class="previous" data-bind="attr: { href: pageHref(page() - 1) }, css: { disabled: page() == 1 }, click: function() { setPage(page() - 1); }">previous</a>
 <!-- ko foreach: pages -->
-<a href="#" data-bind="text: $data, click: function() { $root.setPage($data); }, css: { current: $root.page() == $data }"></a>
+<a data-bind="attr: { href: $root.pageHref($data) }, text: $data, click: function() { $root.setPage($data); }, css: { current: $root.page() == $data }"></a>
 <!-- /ko -->
-<a class="next" href="#" data-bind="css: { disabled: page() == pages().length }, click: function() { setPage(page() + 1); }">next</a>
+<a class="next" data-bind="attr: { href: pageHref(page() + 1) }, css: { disabled: page() == pages().length }, click: function() { setPage(page() + 1); }">next</a>
 </nav>
 
 <script type="text/html" id="datagrid-row">

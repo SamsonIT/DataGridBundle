@@ -37,6 +37,7 @@ var DataGrid = Class.extend({
             columns[i].setGrid(this);
             this.columns.push(columns[i]);
         }
+        this.page = ko.observable(options.page);
         
         this.rows = ko.observableArray();
         for (i in data) {
@@ -102,7 +103,7 @@ var DataGrid = Class.extend({
     }
 });
 
-var Column = Class.extend({
+DataGrid.Column = Class.extend({
     name: null,
     title: null,
     grid: null,
@@ -125,7 +126,7 @@ var Column = Class.extend({
             
     setGrid: function(grid) {
         this.grid = grid;
-        
+
         this.classes = ko.computed(function() {
             return {
                 sortable: this.grid.sortable && this.sortable,
@@ -140,7 +141,7 @@ var Column = Class.extend({
     }
 });
 
-var SingleIconColumn = Column.extend({
+DataGrid.SingleIconColumn = DataGrid.Column.extend({
     icon: null,
     headCellTemplate: 'single-icon-head-cell-template',
     bodyCellTemplate: 'single-icon-body-cell-template',
@@ -151,7 +152,7 @@ var SingleIconColumn = Column.extend({
     }
 });
 
-var Row = Class.extend({
+DataGrid.Row = Class.extend({
     grid: null,
     textData: null,
     formData: null,
@@ -200,7 +201,8 @@ var Row = Class.extend({
         if (name in this.textData()) {
             return this.textData()[name];
         }
-        throw "The row data doesn't have a "+name+" field!";
+        //throw "The row data doesn't have a "+name+" field!";
+        return '';
     },
     
     getSaveUrl: function() {
@@ -271,13 +273,3 @@ var Row = Class.extend({
         });
     }
 });
-
-var RowFactory = {
-    create: function(rows) {
-        var returnRows = [];
-        for (i in rows) {
-            returnRows.push(new Row(rows[i]));
-        }
-        return returnRows;
-    }
-};

@@ -30,6 +30,9 @@ DataGrid.ClientSide = DataGrid.extend({
                 var row = this.existingRows()[i];
                 for (j in this.columns()) {
                     var column = this.columns()[j];
+                    if (!column.quickSearch) {
+                        continue;
+                    }
                     var value = row.textData()[column.name];
                     if (!value) {
                         continue;

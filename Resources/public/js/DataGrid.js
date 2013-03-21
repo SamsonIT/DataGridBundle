@@ -113,6 +113,7 @@ DataGrid.Column = Class.extend({
     grid: null,
     classes: null,
     sortable: null,
+    quickSearch: true,
     headCellTemplate: 'head-cell-template',
     bodyCellTemplate: 'body-cell-template',
 
@@ -121,11 +122,13 @@ DataGrid.Column = Class.extend({
         
         var options = $.extend({
             title: name,
-            sortable: true
+            sortable: true,
+            quickSearch: true
         }, options, true);
         
         this.title = options.title;
         this.sortable = options.sortable;
+        this.quickSearch = options.quickSearch;
     },
             
     setGrid: function(grid) {
@@ -152,6 +155,7 @@ DataGrid.DateColumn = DataGrid.Column.extend({
     init: function() {
         this.formatter = new goog.i18n.DateTimeFormat(goog.i18n.DateTimeFormat.Format.MEDIUM_DATETIME);
         this['_super'].apply(this, arguments);
+        this.quickSearch = false;
     },
     format: function(date) {
         if (!date) {
@@ -169,6 +173,7 @@ DataGrid.SingleIconColumn = DataGrid.Column.extend({
         this._super(name, options);
         this.icon = icon;
         this.sortable = false;
+        this.quickSearch = false;
     }
 });
 

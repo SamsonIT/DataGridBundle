@@ -154,6 +154,9 @@ DataGrid.DateColumn = DataGrid.Column.extend({
         this['_super'].apply(this, arguments);
     },
     format: function(date) {
+        if (!date) {
+            return;
+        }
         return this.formatter.format(goog.date.DateTime.fromRfc822String(date));
     }
 });

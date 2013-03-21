@@ -31,8 +31,11 @@ DataGrid.ClientSide = DataGrid.extend({
                 for (j in this.columns()) {
                     var column = this.columns()[j];
                     var value = row.textData()[column.name];
+                    if (!value) {
+                        continue;
+                    }
 
-                    if (value.toString().indexOf(this.filter()) > -1) {
+                    if (value.toString().toLowerCase().indexOf(this.filter().toLowerCase()) > -1) {
                         filteredRows.push(row);
                         break;
                     }

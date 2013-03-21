@@ -17,8 +17,6 @@ DataGrid.ClientSide = DataGrid.extend({
         }, options, true);
         
         this._super(columns, data, options);
-        
-        this.sorting = ko.observable({ column: null, inverse: false });
 
         this.currentPage = ko.observable(options.page);
         

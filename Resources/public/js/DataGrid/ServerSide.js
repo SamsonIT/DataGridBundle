@@ -66,10 +66,14 @@ DataGrid.ServerSide = DataGrid.extend({
         this.totalResults(pagination.total_count);
         
         this.page(parseInt(pagination.current_page_number));
-        for (i in this.columns()) {
-            if (this.columns()[i].sortColumn == pagination.params.sort) {
-                this.sorting({ column: this.columns()[i], inverse: pagination.params.direction == 'desc' });
+        if (pagination.params.sort) {
+            for (i in this.columns()) {
+                if (this.columns()[i].sortColumn == pagination.params.sort) {
+                    this.sorting({ column: this.columns()[i], inverse: pagination.params.direction == 'desc' });
+                }
             }
+        } else {
+            this.sorting({ column: null, inverse: false });
         }
 
         this.rows.removeAll();
@@ -89,8 +93,8 @@ DataGrid.ServerSide = DataGrid.extend({
         return {
             _format: format || 'html',
             page: this.page(),
-            sort: this.sorting().column.sortColumn,
-            direction: this.sorting().inverse ? 'desc' : 'asc',
+            sort: this.sorting().column ? this.sorting().column.sortColumn : null,
+            direction: this.sorting().column ? (this.sorting().inverse ? 'desc' : 'asc') : null,
         }
     },
             

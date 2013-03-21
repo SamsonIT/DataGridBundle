@@ -88,6 +88,9 @@ Results per page: <select data-bind="value: pageSize">
 <script type="text/html" id="body-cell-template">
 <td data-bind="html: data"></td>
 </script>
+<script type="text/html" id="date-body-cell-template">
+<td data-bind="html: column.format(data)"></td>
+</script>
 
 <script type="text/html" id="single-icon-body-cell-template">
 <td><!-- ko if: data.length > 5 --><img data-bind="attr: { src: column.icon, 'data-overlib': data }"><!-- /ko --></td>

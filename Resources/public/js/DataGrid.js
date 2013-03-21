@@ -145,6 +145,19 @@ DataGrid.Column = Class.extend({
     }
 });
 
+goog.require('goog.i18n.DateTimeFormat');
+goog.require('goog.date');
+DataGrid.DateColumn = DataGrid.Column.extend({
+    bodyCellTemplate: 'date-body-cell-template',
+    init: function() {
+        this.formatter = new goog.i18n.DateTimeFormat(goog.i18n.DateTimeFormat.Format.MEDIUM_DATETIME);
+        this['_super'].apply(this, arguments);
+    },
+    format: function(date) {
+        return this.formatter.format(goog.date.DateTime.fromRfc822String(date));
+    }
+});
+
 DataGrid.SingleIconColumn = DataGrid.Column.extend({
     icon: null,
     headCellTemplate: 'single-icon-head-cell-template',

@@ -13,7 +13,7 @@ DataGrid.ClientSide = DataGrid.extend({
             pageSize: 10,
             page: 1,
             enableFilter: true,
-            enablePageSizeSelector: true
+            enablePageSizeSelector: false
         }, options, true);
         
         this._super(columns, data, options);

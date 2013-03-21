@@ -197,6 +197,10 @@ DataGrid.Row = Class.extend({
     setGrid: function(grid) {
         this.grid = grid;
     },
+            
+    isColumnForm: function(name) {
+        return this.formData() && name in this.formData();
+    },
 
     getColumnData: function(name) {
         if (name in this.data()) {

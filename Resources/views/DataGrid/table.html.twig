@@ -58,7 +58,7 @@ Results per page: <select data-bind="value: pageSize">
 <tr data-bind="if: errors"><td data-bind="html: errors" colspan="4"></td></tr>
     <tr>
         <!-- ko foreach: { data: $root.columns, as: 'column' } -->
-            <!-- ko template: { name: column.bodyCellTemplate, data: { column: column, row: row, data: row.getColumnData(column.name) } } --><!-- /ko -->
+            <!-- ko template: { name: row.isColumnForm(column.name) ? 'body-cell-template' : column.bodyCellTemplate, data: { column: column, row: row, data: row.getColumnData(column.name) } } --><!-- /ko -->
         <!-- /ko -->
         <!-- ko if: $root.allowEdit -->
         <td>

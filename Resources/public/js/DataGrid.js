@@ -152,8 +152,9 @@ goog.require('goog.i18n.DateTimeFormat');
 goog.require('goog.date');
 DataGrid.DateColumn = DataGrid.Column.extend({
     bodyCellTemplate: 'date-body-cell-template',
-    init: function() {
-        this.formatter = new goog.i18n.DateTimeFormat(goog.i18n.DateTimeFormat.Format.MEDIUM_DATETIME);
+    
+    init: function(name, options) {
+        this.formatter = new goog.i18n.DateTimeFormat(options.formatMask !== 'undefined' ? options.formatMask : goog.i18n.DateTimeFormat.Format.MEDIUM_DATETIME);
         this['_super'].apply(this, arguments);
         this.quickSearch = false;
     },

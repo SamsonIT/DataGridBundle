@@ -154,7 +154,12 @@ DataGrid.DateColumn = DataGrid.Column.extend({
     bodyCellTemplate: 'date-body-cell-template',
     
     init: function(name, options) {
-        this.formatter = new goog.i18n.DateTimeFormat(options.formatMask !== 'undefined' ? options.formatMask : goog.i18n.DateTimeFormat.Format.MEDIUM_DATETIME);
+
+        var options = $.extend({
+            formatMask: goog.i18n.DateTimeFormat.Format.MEDIUM_DATETIME,
+        }, options, true);
+
+        this.formatter = new goog.i18n.DateTimeFormat(options.formatMask);
         this['_super'].apply(this, arguments);
         this.quickSearch = false;
     },

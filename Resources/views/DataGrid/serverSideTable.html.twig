@@ -1,6 +1,0 @@
-{% include 'SamsonDataGridBundle:DataGrid:table.html.twig' %}
-
-<script>
-    var grid = new DataGrid.ServerSide({{ columns }}, {{ pagination|serialize|raw }});
-    ko.applyBindings(grid);
-</script>

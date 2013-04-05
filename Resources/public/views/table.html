@@ -1,0 +1,13 @@
+<table class="list" cellspacing="0" cellpadding="0">
+    <thead>
+        <tr>
+            <th ng-repeat="column in columns" ng-click="sort(column)" ng-class="getColumnClasses(column)">{{ column.name }}</th>
+            <th ng-show="actions.create"><a ng-href="{{ generateCreateUrl(actions['create']['route']) }}" ng-click="createRow($event)">Create</a></th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr ng-repeat="row in visibleRows()" ng-include="'/bundles/samsondatagrid/views/row.html'"></tr>
+        <tr ng-repeat="row in newRows()" ng-include="'/bundles/samsondatagrid/views/row.html'"></tr>
+        <tr ng-show="!visibleRows().length"><td colspan="columns.length">Geen resultaten</td></tr>
+    </tbody>
+</table>

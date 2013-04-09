@@ -87,14 +87,17 @@ angular.module('DataGrid', [])
                         }
                         
                         $scope.generateEditUrl = function(route, row) {
+                            if( !route ) { return }
                             return Routing.generate(route, getUrlParams({ id: row.data.id }, 'edit'));
                         }
                         
                         $scope.generateCreateUrl = function(route, row) {
+                            if( !route ) { return }
                             return Routing.generate(route, getUrlParams({}, 'create'));
                         }
                         
                         $scope.generateDeleteUrl = function(route, row) {
+                            if( !route ) { return }
                             return Routing.generate(route, getUrlParams({ id: row.data.id }, 'delete'));
                         }
                     }

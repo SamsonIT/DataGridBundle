@@ -220,7 +220,7 @@ angular.module('DataGrid', [])
                 return {
                     pre: function preLink($scope, iElement, iAttrs, controller) {
                         $scope.rows = [];
-                        var data = angular.fromJson(transclude($scope)[0].innerText);
+                        var data = angular.fromJson(transclude($scope).text());
                         for (i in data) {
                             $scope.rows.push({ data: data[i] });
                         }

@@ -11,7 +11,7 @@ angular.module('DataGrid')
                 return {
                     pre: function preLink($scope, iElement, iAttrs, controller) {
                         $scope.rows = [];
-                        var data = angular.fromJson(transclude($scope)[0].innerText);
+                        var data = angular.fromJson(transclude($scope).text());
 
                         $scope.parsePaginationData = function(data) {
                             $scope.paginationData = data;

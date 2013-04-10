@@ -45,7 +45,6 @@ angular.module('DataGrid', [])
     })
     .directive('column', function() {
         return {
-            require: "^?columns",
             restrict: "E",
             template: '',
             replace: true,
@@ -188,7 +187,6 @@ angular.module('DataGrid', [])
     })
     .directive('action', function() {
         return {
-            require: "^?crud",
             restrict: "E",
             template: '',
             replace: true,

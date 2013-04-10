@@ -62,13 +62,6 @@ angular.module('DataGrid')
                     $http.get(Routing.generate($scope.paginationData.route, getIndexParams(sortData))).success(function(data) {
                         $scope.parsePaginationData(data);
                     });
-                    
-//                    if ($scope.sortData.column === column) {
-//                        $scope.sortData.inverse = !$scope.sortData.inverse;
-//                    } else {
-//                        $scope.sortData.column = column;
-//                        $scope.sortData.inverse = false;
-//                    }
                 }
                 $scope.$parent.newRows = function() {
                     var rows = [];

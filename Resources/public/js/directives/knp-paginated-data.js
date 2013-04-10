@@ -1,4 +1,3 @@
-
 angular.module('DataGrid')
     .directive('knpPaginatedData', function() {
         return {
@@ -27,7 +26,7 @@ angular.module('DataGrid')
                                     }
                                 }
                             }
-                        }
+                        };
 
                         $scope.parsePaginationData(data);
                     }
@@ -37,16 +36,16 @@ angular.module('DataGrid')
                 var routeParams = { page: $scope.paginationData.page || null, sort: $scope.paginationData.sort || null, direction: $scope.paginationData.direction || null };
                 var getIndexParams = function(params) {
                     return angular.extend(routeParams, params);
-                }
+                };
                 
                 $scope.$parent.getPage = function() {
                     return $scope.paginationData.current_page_number;
-                }
+                };
                 $scope.$parent.setPage = function(page) {
                     $http.get(Routing.generate($scope.paginationData.route, getIndexParams({ page: page }))).success(function(data) {
                         $scope.parsePaginationData(data);
                     });
-                }
+                };
                 $scope.$parent.sort = function(column) {
                     if (!column.sortField) {
                         return;
@@ -62,7 +61,7 @@ angular.module('DataGrid')
                     $http.get(Routing.generate($scope.paginationData.route, getIndexParams(sortData))).success(function(data) {
                         $scope.parsePaginationData(data);
                     });
-                }
+                };
                 $scope.$parent.newRows = function() {
                     var rows = [];
 
@@ -73,7 +72,7 @@ angular.module('DataGrid')
                     }
 
                     return rows;
-                }          
+                };
                 $scope.$parent.existingRows = function() {
                     var rows = [];
 
@@ -84,17 +83,17 @@ angular.module('DataGrid')
                     }
 
                     return rows;
-                }
+                };
 
                 $scope.$parent.filteredRows = function() {
                     return $scope.existingRows();
-                }
+                };
                 $scope.$parent.sortedRows = function() {
                     return $scope.filteredRows();
-                }
+                };
                 $scope.$parent.visibleRows = function() {
                     return $scope.sortedRows();
-                }
+                };
 
                 $scope.$parent.pages = function() {
                     var pages = [];
@@ -102,7 +101,7 @@ angular.module('DataGrid')
                         pages.push(i);
                     }
                     return pages;
-                }
+                };
                 
                 $scope.$parent.getColumnClasses = function(column) {
                     var classes = { sortable: column.sortField || false }
@@ -111,7 +110,7 @@ angular.module('DataGrid')
                         classes.sorting_desc = $scope.sortData.inverse;
                     }
                     return classes;
-                }
+                };
             }
         }
     })

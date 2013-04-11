@@ -64,6 +64,12 @@ angular.module('DataGrid')
                     if ($scope.actions['create'].inline) {
                         e.preventDefault();
                         
+                        if ($scope.existingRows().indexOf(row) == -1) {
+                            var index = $scope.rows.indexOf(row);
+                            $scope.rows.splice(index, 1);
+                            return;
+                        }
+                        
                         if (!confirm('Delete this row?')) {
                             return;
                         }

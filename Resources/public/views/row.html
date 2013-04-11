@@ -3,5 +3,5 @@
     <a ng-hide='row.form' ng-click='editRow(row, $event)' ng-href="{{ generateEditUrl(actions['edit']['route'], row) }}">Edit</a>
     <button ng-show='row.form' ng-click='saveRow(row, $event)'>Save</button>
 </td>
-<td ng-show="actions.delete"><a ng-href="{{ generateDeleteUrl(actions['delete']['route'], row) }}" ng-click="deleteRow(row, $event)">Delete</a></td>
-<td ng-show="row.form.errors" ng-bind-html-unsafe="row.form.errors"></td>
+<td datagrid-if="actions.delete"><a ng-href="{{ generateDeleteUrl(actions['delete']['route'], row) }}" ng-click="deleteRow(row, $event)">Delete</a></td>
+<td datagrid-if="row.form.errors" ng-bind-html-unsafe="row.form.errors"></td>

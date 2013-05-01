@@ -1,0 +1,8 @@
+{
+    "errors": {{ form.vars.errors|serialize|raw }},
+    "widgets": {
+        {% for child in form %}
+        "{{ child.vars.name|underscore }}": {"widget": "{{ form_widget(child)|e }}", "error": {{ child.vars.errors|serialize|raw }}}{% if not loop.last %},{% endif %}
+        {% endfor %}
+    }
+}

@@ -1,7 +1,7 @@
 <table class="list" cellspacing="0" cellpadding="0">
     <thead>
         <tr>
-            <th ng-repeat="column in columns" ng-click="sort(column)" ng-class="getColumnClasses(column)">{{ column.name }}</th>
+            <th ng-repeat="column in columns" ng-click="sort(column)" ng-class="getColumnClasses(column)">{{ column.label }}</th>
             <th datagrid-if="actions.create"><a ng-href="{{ generateCreateUrl(actions['create']['route']) }}" ng-click="createRow($event)">Create</a></th>
         </tr>
     </thead>

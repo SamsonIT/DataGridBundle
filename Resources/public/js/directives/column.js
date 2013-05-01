@@ -8,8 +8,8 @@ angular.module('DataGrid')
             compile: function compile(tElement, tAttrs, transclude) {
                 return {
                     pre: function preLink($scope, iElement, iAttrs) {
-                        var data = transclude($scope);
                         var column = {};
+                        column.label = transclude($scope).text();
                         for (i in iAttrs.$attr) {
                             column[i] = iAttrs[i];
                         }

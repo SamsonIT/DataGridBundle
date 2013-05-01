@@ -86,12 +86,13 @@ angular.module('DataGrid')
                 $scope.loadForm = function(row, data) {
                     row.form = {
                         widgets: {},
-                        errors: $("<div>").html(data.errors).text()
+                        errors: data.errors
+                
                     };
                     for (i in data.widgets) {
                         row.form.widgets[i] = {
                             widget: $("<div>").html(data.widgets[i].widget).text(),
-                            error: $("<div>").html(data.widgets[i].error).text()
+                            error: data.widgets[i].error
                         };
                     }
                 };

@@ -1,2 +1,6 @@
-<div ng-bind-html-unsafe="row.form.widgets[column.name].error"></div>
+<div>
+    <ul>
+        <li ng-repeat="error in row.form.widgets[column.name].error">{{ error }}</li>
+    </ul>
+</div>
 <div ng-bind-html-unsafe="row.form.widgets[column.name].widget"></div>

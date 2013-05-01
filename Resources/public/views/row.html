@@ -4,4 +4,12 @@
     <button ng-show='row.form' ng-click='saveRow(row, $event)'>Save</button>
 </td>
 <td datagrid-if="actions.delete"><a ng-href="{{ generateDeleteUrl(actions['delete']['route'], row) }}" ng-click="deleteRow(row, $event)">Delete</a></td>
-<td datagrid-if="row.form.errors" ng-bind-html-unsafe="row.form.errors"></td>
+
+<!-- <td datagrid-if="row.form.errors" ng-bind-html-unsafe="row.form.errors"></td> -->
+<td datagrid-if="row.form.errors.length > 0">
+    <ul>
+        <li ng-repeat="error in row.form.errors">
+            {{ error }}
+        </li>
+    </ul>
+</td>

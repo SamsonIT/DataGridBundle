@@ -11,7 +11,7 @@ angular.module('DataGrid')
                 $scope.sortData = { column: null, inverse: false };
                 $scope.filter = "";
                 $scope.page = 1;
-                $scope.pageSize = 5;
+                $scope.pageSize = ($attrs['pagesize'] ? $attrs['pagesize'] : 5);
                 
                 $scope.addColumn = function(column) {
                     $scope.columns.push(column);

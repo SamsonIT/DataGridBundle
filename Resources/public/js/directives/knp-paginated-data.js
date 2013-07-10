@@ -33,7 +33,7 @@ angular.module('DataGrid')
                 };
             },
             controller: function($scope, $http, $transclude) {
-                var routeParams = { page: $scope.paginationData.page || null, sort: $scope.paginationData.sort || null, direction: $scope.paginationData.direction || null };
+                var routeParams = { page: $scope.paginationData.page || null, sort: $scope.paginationData.sort || null, direction: $scope.paginationData.direction || null, _format: 'json' };
                 var getIndexParams = function(params) {
                     return angular.extend(routeParams, params);
                 };

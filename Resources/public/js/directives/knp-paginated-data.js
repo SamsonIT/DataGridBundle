@@ -73,6 +73,11 @@ angular.module('DataGrid')
 
                     return rows;
                 };
+
+                $scope.$parent.rowCount = function() {
+                    return $scope.paginationData.total_count;
+                };
+
                 $scope.$parent.existingRows = function() {
                     var rows = [];
 

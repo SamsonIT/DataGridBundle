@@ -47,6 +47,11 @@ angular.module('DataGrid')
 
                     return rows;
                 };  
+
+                $scope.$parent.rowCount = function() {
+                    return $scope.$parent.existingRows().length;
+                };
+
                 $scope.$parent.existingRows = function() {
                     var rows = [];
 

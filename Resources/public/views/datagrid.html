@@ -1,14 +1,25 @@
 <div>
     <div></div>
     
-    <div><input type="text" ng-model="filter"></div>
+    <div ng-show="filterColumns"><input type="text" ng-model="filter" ng-list="/\s+/"></div>
 
     <div ng-transclude>
+
     </div>
 
-    <div ng-show="pages().length != 1">
-        <a ng-repeat="pageNo in pages()" ng-click="setPage(pageNo)" ng-class="{ current: getPage() == pageNo }">{{ pageNo }}</a>
+    <div>
+        <table class="list" cellspacing="0" cellpadding="0">
+            <thead ng-include="headerTemplate"></thead>
+            <tbody ng-repeat="row in visibleRows" ng-include="getRowTemplate(row)" datagrid-row></tbody>
+            <tbody ng-repeat="row in newRows" ng-include="formTemplate" datagrid-row></tbody>
+            <tbody><tr datagrid-if="!visibleRows.length && !newRows.length" ng-include='noResultsTemplate'></tr></tbody>
+        </table>
     </div>
 
-    <p class="table-info">{{ sortedRows().indexOf(visibleRows()[0]) + 1 }} through {{ sortedRows().indexOf(visibleRows()[visibleRows().length - 1]) + 1 }} of {{ filteredRows().length }} results displayed (total: {{ rowCount() }})</p>
+    <p class="table-info">{{ firstResult }} through {{ lastResult }} of {{ filteredResults }} results displayed (total: {{ totalResults }})</p>
+
+    <div ng-show="pages.length != 1">
+        <a ng-repeat="pageNo in pages" ng-click="setPage(pageNo)" ng-class="{ current: page == pageNo }">{{ pageNo }}</a>
+    </div>
+
 </div>

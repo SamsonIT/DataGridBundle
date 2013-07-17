@@ -8,5 +8,12 @@
         <service id="samson_datagrid.twig.extension" class="Samson\Bundle\DataGridBundle\Twig\TwigExtension">
             <tag name="twig.extension" />
         </service>
+        <service id="samson_datagrid.knp_paginator.filter" class="Samson\Bundle\DataGridBundle\KnpPaginator\FilterSubscriber">
+            <tag name="knp_paginator.subscriber"/>
+            <argument type="service" id="samson.autocomplete.results_fetcher"/>
+            <call method="setRequest">
+                <argument type="service" id="request" on-invalid="null" strict="false"/>
+            </call>
+        </service>
     </services>
 </container>

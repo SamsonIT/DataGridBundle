@@ -27,7 +27,9 @@ angular.module('DataGrid')
                     $scope.filterColumns = iAttr.filterColumns.split(',');
                 }
                 $scope.driver = 'driver' in iAttr ? iAttr['driver'] : 'clientside';
-                $scope.routes = $scope.$eval('{'+iAttr.routes+'}');
+                if(iAttr.routes) {
+                    $scope.routes = $scope.$eval('{'+iAttr.routes+'}');
+                }
 
                 $scope.setData(data);
 

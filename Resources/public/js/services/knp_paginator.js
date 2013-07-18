@@ -1,4 +1,4 @@
-angular.module('DataGrid').factory('datagrid.driver.knp-paginator', function($http, $q, $state, $location) {
+angular.module('DataGrid').factory('datagrid.driver.knp-paginator', function($http, $q, $location) {
     var data;
     var filter = '';
     var filterTimeout;

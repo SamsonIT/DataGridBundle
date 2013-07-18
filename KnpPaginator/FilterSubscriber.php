@@ -32,11 +32,24 @@ class FilterSubscriber implements EventSubscriberInterface
             if ($this->request->query->has($event->options['filterFieldParameterName'])
                 && $this->request->query->has($event->options['filterValueParameterName'])
             ) {
-                $fields = (array) $_GET[$event->options['filterFieldParameterName']];
-                $values = (array) $_GET[$event->options['filterValueParameterName']];
+                $fields = $this->assertArray($_GET[$event->options['filterFieldParameterName']], ",");
+                $values = $this->assertArray($_GET[$event->options['filterValueParameterName']], "/\s+/");
 
                 $this->fetcher->getResultsByArray($values, $qb, $fields);
             }
+        }
+    }
+
+    private function assertArray($value, $separator)
+    {
+        if (is_array($value)) {
+            return $value;
+        }
+
+        if ($separator[0] == '/') {
+            return preg_split($separator, $value);
+        } else {
+            return explode($separator, $value);
         }
     }
 

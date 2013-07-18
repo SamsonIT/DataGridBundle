@@ -10,7 +10,7 @@ angular.module('DataGrid').factory('datagrid.driver.knp-paginator', function($ht
             angular.copy(data.params, defaults);
         }
         params = angular.extend(defaults, params);
-        if (!params[data.paginator_options.filterValueParameterName].length) {
+        if (!(data.paginator_options.filterValueParameterName in params) || !params[data.paginator_options.filterValueParameterName].length) {
             delete params[data.paginator_options.filterFieldParameterName];
             delete params[data.paginator_options.filterValueParameterName];
         }
@@ -25,7 +25,6 @@ angular.module('DataGrid').factory('datagrid.driver.knp-paginator', function($ht
 
     return {
         setData: function(newData) {
-            console.log(newData);
             data = newData;
         },
         getVisibleRows: function() {

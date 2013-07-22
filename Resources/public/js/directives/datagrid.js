@@ -271,5 +271,19 @@ angular.module('DataGrid')
                 });
             }
         }
+    }).directive('rowClick', function() {
+        return {
+            restrict: 'A',
+            link: function($scope, iElement) {
+                iElement.closest('tr')
+                    .css('cursor', 'pointer')
+                    .on('click', function(e) {
+                    if (!$(e.target).is('a') && !($(e.target).closest('a, input').length)) {
+                        iElement.click();
+                        e.preventDefault();
+                    }
+                })
+            }
+        }
     })
 ;

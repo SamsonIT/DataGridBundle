@@ -26,10 +26,22 @@ angular.module('Samson.DataGrid')
                 if ('filterColumns' in iAttr) {
                     $scope.filterColumns = iAttr.filterColumns.split(',');
                 }
+                if ('service' in iAttr) {
+                    $scope.dataService = iAttr.service;
+                }
                 $scope.driver = 'driver' in iAttr ? iAttr['driver'] : 'clientside';
                 if(iAttr.routes) {
                     $scope.routes = $scope.$eval('{'+iAttr.routes+'}');
                 }
+                $scope.routeParams = {};
+                if (iAttr.routeParams) {
+                    $scope.routeParams = $scope.$eval(iAttr.routeParams);
+                }
+                $scope.idMap = { id: 'row.id' };
+                if (iAttr.idMap) {
+                    $scope.idMap = $scope.$eval(iAttr.idMap);
+                }
+
 
                 $scope.setData(data);
 
@@ -51,6 +63,10 @@ angular.module('Samson.DataGrid')
             controller: function($scope, $attrs, $templateCache, $injector, $parse, $http) {
                 $scope.editing = [];
                 $scope.newRows = [];
+
+                this.getDataService = function() {
+                    return $scope.dataService;
+                }
 
                 var self = this;
                 $scope.headerTemplate = 'datagrid-no-header.html';
@@ -80,8 +96,20 @@ angular.module('Samson.DataGrid')
                     return driver[method].apply(driver, Array.prototype.slice.call(arguments, 1));
                 }
 
+                this.transform = function(data) {
+                    if (!$scope.dataService) {
+                        return data;
+                    }
+
+                    var service = $injector.get($scope.dataService);
+
+                    return service.transformResponse(data);
+                }
+
                 $scope.setData = function(data) {
-                    callDriver('setData', data );
+                    for (var i in data) {
+                        callDriver('addRow', self.transform(data[i]));
+                    }
                     self.updateData();
                 }
                 this.updateData = function() {
@@ -126,17 +154,32 @@ angular.module('Samson.DataGrid')
                     return $scope.visibleRows.indexOf(row) > -1;
                 }
 
+                var generateParams = function(extraParams) {
+                    extraParams = typeof(extraParams) == 'undefined' ? {} : extraParams;
+
+                    return angular.extend(extraParams, $scope.routeParams)
+                }
+                var generateIdParams = function(row, extraParams) {
+                    var params = {};
+
+                    for (var i in $scope.idMap) {
+                        var map = $scope.idMap[i];
+
+                        params[i] = $parse(map.substring(4))(row);
+                    }
+
+                    return generateParams($.extend(extraParams, params));
+                }
+
                 $scope.createPath = function(extraParams) {
                     extraParams = typeof(extraParams) == 'undefined' ? {} : extraParams;
-                    return Routing.generate($scope.routes['create'], extraParams);
+                    return Routing.generate($scope.routes['create'], generateParams(extraParams));
                 }
                 $scope.editPath = function(row, extraParams) {
-                    extraParams = typeof(extraParams) == 'undefined' ? {} : extraParams;
-                    return Routing.generate($scope.routes['edit'], angular.extend({ id: row.id }, extraParams));
+                    return Routing.generate($scope.routes['edit'], generateIdParams(row, extraParams));
                 }
-                $scope.deletePath = function(row) {
-                    extraParams = typeof(extraParams) == 'undefined' ? {} : extraParams;
-                    return Routing.generate($scope.routes['delete'], angular.extend({ id: row.id }, extraParams));
+                $scope.deletePath = function(row, extraParams) {
+                    return Routing.generate($scope.routes['delete'], generateIdParams(row, extraParams));
                 }
 
                 $scope.getRowTemplate = function(row) {
@@ -171,13 +214,19 @@ angular.module('Samson.DataGrid')
                 $scope.$on('row.updated', function(e, row) {
                     $scope.editing.splice($scope.editing.indexOf(row), 1);
                     self.updateData();
-                    self.paginateToObject(row);
+//                    self.paginateToObject(row);
                 });
                 $scope.$on('row.created', function(e, row) {
                     callDriver('addRow', row);
                     $scope.newRows.splice($scope.editing.indexOf(row), 1);
                     self.updateData();
-                    self.paginateToObject(row);
+//                    self.paginateToObject(row);
+                })
+
+                $scope.$on('row.deleted', function(e, row) {
+                    callDriver('deleteRow', row);
+                    $scope.editing.splice($scope.editing.indexOf(row), 1);
+                    self.updateData();
                 })
             }
         };
@@ -185,8 +234,29 @@ angular.module('Samson.DataGrid')
     }).directive('datagridRow', function() {
         return {
             restrict: 'A',
-            controller: function($scope, $http) {
+            require: '^datagrid',
+            link: function($scope, iElement, iAttr, datagridCtrl) {
+                $scope.setDataService(datagridCtrl.getDataService());
+                $scope.transform = datagridCtrl.transform;
+            },
+            controller: function($scope, $http, $injector) {
                 $scope.hasErrors = false;
+
+                var dataService;
+
+                $scope.setDataService = function(dataservice) {
+                    dataService = $injector.get($scope.dataService);
+                }
+
+                $scope.delete = function(row) {
+                    if (!confirm('Are you sure you wish to delete this row?')) {
+                        return;
+                    }
+
+                    $http.delete($scope.deletePath(row, { _format: 'json' }), row).success(function() {
+                        $scope.$emit('row.deleted', row);
+                    })
+                }
 
                 $scope.save = function(row) {
                     var method;
@@ -200,9 +270,17 @@ angular.module('Samson.DataGrid')
                         url = $scope.createPath({ _format: 'json' });
                     }
 
-                    $http[method](url, row).success(function(data) {
+                    var options = {};
+
+                    if ('transformRequest' in dataService) {
+                        options.transformRequest = dataService.transformRequest;
+                    }
+
+                    $http[method](url, row, options).success(function(data) {
                         $scope.$broadcast('errors.updated', {});
                         $scope.hasErrors = false;
+
+                        data = $scope.transform(data);
                         angular.copy(data, row);
                         if (method == 'put') {
                             $scope.$emit('row.updated', row);

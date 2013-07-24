@@ -23,8 +23,9 @@ angular.module('Samson.DataGrid').factory('datagrid.driver.clientside', function
             var value = filter[j].toLowerCase();
             var found = false
             for (var i in filterFields) {
-                var field = filterFields[i];
-                if (row[field].toLowerCase().indexOf(value) > -1) {
+                var field = $parse(filterFields[i]);
+
+                if (field(row).toLowerCase().indexOf(value) > -1) {
                     found = true;
                     break;
                 }
@@ -125,9 +126,10 @@ angular.module('Samson.DataGrid').factory('datagrid.driver.clientside', function
         },
         addRow: function(row) {
             data.push(row);
+        },
+        deleteRow: function(row) {
+            data.splice(data.indexOf(row), 1);
             this.update();
-
-            var newPage = Math.ceil(sortedRows.indexOf(row) / itemsPerPage);
         }
     }
 })

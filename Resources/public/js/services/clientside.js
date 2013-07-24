@@ -1,5 +1,5 @@
-angular.module('DataGrid').factory('datagrid.driver.clientside', function($http, $q, $filter) {
-    var data;
+angular.module('Samson.DataGrid').factory('datagrid.driver.clientside', function($http, $q, $filter, $parse) {
+    var data = [];
     var page = 1;
     var pages = [1];
     var itemsPerPage = 5;

@@ -1,4 +1,4 @@
-angular.module('DataGrid')
+angular.module('Samson.DataGrid')
     .directive('datagrid', function() {
         var directiveDefinitionObject = {
             restrict: 'E',

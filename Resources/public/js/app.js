@@ -1,1 +1,1 @@
-angular.module('DataGrid', []);
+angular.module('Samson.DataGrid', []);

@@ -2,7 +2,7 @@
  * This file was copied from https://github.com/angular-ui/angular-ui/blob/master/modules/directives/if/if.js
  * and altered to our needs
  */
-angular.module('DataGrid').directive('datagridIf', [function () {
+angular.module('Samson.DataGrid').directive('datagridIf', [function () {
   return {
     transclude: 'element',
     priority: 1000,

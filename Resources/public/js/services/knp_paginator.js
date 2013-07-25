@@ -1,5 +1,5 @@
 angular.module('Samson.DataGrid').factory('datagrid.driver.knp-paginator', function($http, $q, $location) {
-    var data;
+    var data = [];
     var filter = '';
     var filterTimeout;
     var filterFields;
@@ -24,8 +24,12 @@ angular.module('Samson.DataGrid').factory('datagrid.driver.knp-paginator', funct
     }
 
     return {
-        setData: function(newData) {
+        setData: function(newData, transformFn) {
+            for (var i in newData.items) {
+                newData.items[i] = transformFn(newData.items[i]);
+            }
             data = newData;
+            data.transformFn = transformFn;
         },
         getVisibleRows: function() {
             return data.items;
@@ -69,8 +73,8 @@ angular.module('Samson.DataGrid').factory('datagrid.driver.knp-paginator', funct
             pageParams[data.paginator_options.pageParameterName] = page;
             var routeParams = getRouteParams(pageParams);
 
-            $http.get(generateRoute(data.route, routeParams)).success(function(data) {
-                self.setData(data);
+            $http.get(generateRoute(data.route, routeParams)).success(function(newData) {
+                self.setData(newData, data.transformFn);
                 deferred.resolve();
 
                 $location.search(routeParams).replace();
@@ -85,8 +89,8 @@ angular.module('Samson.DataGrid').factory('datagrid.driver.knp-paginator', funct
             sortParams[data.paginator_options.sortFieldParameterName] = column;
             sortParams[data.paginator_options.sortDirectionParameterName] = data.params.sort == column ? (data.params.direction == 'desc' ? 'asc' : 'desc') : 'asc';
             var routeParams = getRouteParams(sortParams);
-            $http.get(generateRoute(data.route, routeParams)).success(function(data) {
-                self.setData(data);
+            $http.get(generateRoute(data.route, routeParams)).success(function(newData) {
+                self.setData(newData, data.transformFn);
                 deferred.resolve();
 
                 $location.search(routeParams).replace();
@@ -115,8 +119,8 @@ angular.module('Samson.DataGrid').factory('datagrid.driver.knp-paginator', funct
                 pageParams[data.paginator_options.filterFieldParameterName] = filterFields;
                 pageParams[data.paginator_options.filterValueParameterName] = filter;
                 var routeParams = getRouteParams(pageParams);
-                $http.get(generateRoute(data.route, routeParams)).success(function(data) {
-                    self.setData(data);
+                $http.get(generateRoute(data.route, routeParams)).success(function(newData) {
+                    self.setData(newData, data.transformFn);
                     deferred.resolve();
 
                     $location.search(routeParams).replace();

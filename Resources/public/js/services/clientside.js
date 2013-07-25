@@ -38,8 +38,11 @@ angular.module('Samson.DataGrid').factory('datagrid.driver.clientside', function
     }
 
     return {
-        setData: function(newData) {
-            data = newData;
+        setData: function(newData, transformFn) {
+            data = [];
+            for (var i in newData) {
+                data.push(newData[i]);
+            }
 
             this.update();
         },
@@ -124,8 +127,8 @@ angular.module('Samson.DataGrid').factory('datagrid.driver.clientside', function
         getSort: function() {
             return [sortField, sortDir];
         },
-        addRow: function(row) {
-            data.push(row);
+        addRow: function(row, transformFn) {
+            data.push(transformFn(row));
         },
         deleteRow: function(row) {
             data.splice(data.indexOf(row), 1);

@@ -116,9 +116,7 @@ angular.module('Samson.DataGrid')
                 }
 
                 $scope.setData = function(data) {
-                    for (var i in data) {
-                        callDriver('addRow', self.transform(data[i]));
-                    }
+                    callDriver('setData', data, self.transform);
                     self.updateData();
                 }
                 this.updateData = function() {
@@ -199,7 +197,7 @@ angular.module('Samson.DataGrid')
                     $scope.editing.push(row);
                 }
                 $scope.create = function() {
-                    $scope.newRows.push({});
+                    $scope.newRows.push(self.transform({}));
                 }
                 $scope.cancel = function(row) {
                     $scope.editing.splice($scope.editing.indexOf(row), 1);
@@ -222,11 +220,13 @@ angular.module('Samson.DataGrid')
 
                 $scope.$on('row.updated', function(e, row) {
                     $scope.editing.splice($scope.editing.indexOf(row), 1);
+                    angular.copy(this.transform(row), row);
                     self.updateData();
 //                    self.paginateToObject(row);
                 });
                 $scope.$on('row.created', function(e, row) {
-                    callDriver('addRow', row);
+                    callDriver('addRow', row, this.transform);
+                    callDriver('update');
                     $scope.newRows.splice($scope.editing.indexOf(row), 1);
                     self.updateData();
 //                    self.paginateToObject(row);
@@ -245,13 +245,14 @@ angular.module('Samson.DataGrid')
             restrict: 'A',
             require: '^datagrid',
             link: function($scope, iElement, iAttr, datagridCtrl) {
-                $scope.setDataService(datagridCtrl.getDataService());
-                $scope.transform = datagridCtrl.transform;
+                if (datagridCtrl.getDataService()) {
+                    $scope.setDataService(datagridCtrl.getDataService());
+                }
             },
             controller: function($scope, $http, $injector) {
                 $scope.hasErrors = false;
 
-                var dataService;
+                var dataService = {};
 
                 $scope.setDataService = function(dataservice) {
                     dataService = $injector.get($scope.dataService);
@@ -289,7 +290,6 @@ angular.module('Samson.DataGrid')
                         $scope.$broadcast('errors.updated', {});
                         $scope.hasErrors = false;
 
-                        data = $scope.transform(data);
                         angular.copy(data, row);
                         if (method == 'put') {
                             $scope.$emit('row.updated', row);

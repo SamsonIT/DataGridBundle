@@ -35,7 +35,7 @@ angular.module('Samson.DataGrid').factory('datagrid.driver.knp-paginator', funct
             return data.items;
         },
         getPage: function() {
-            return data.current_page_number;
+            return parseInt(data.current_page_number);
         },
         getPages: function() {
             var pages = [];
@@ -67,6 +67,11 @@ angular.module('Samson.DataGrid').factory('datagrid.driver.knp-paginator', funct
             return [data.params.sort, data.params.direction];
         },
         setPage: function(page) {
+            if (page < 1) {
+                page = 1;
+            }
+            page = Math.min(Math.max(1, page), this.getPages().length);
+
             var deferred = $q.defer();
             var self = this;
             var pageParams = {};

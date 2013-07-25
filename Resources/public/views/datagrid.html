@@ -18,8 +18,18 @@
 
     <p class="table-info">{{ firstResult }} through {{ lastResult }} of {{ filteredResults }} results displayed (total: {{ totalResults }})</p>
 
-    <div ng-show="pages.length != 1">
-        <a ng-repeat="pageNo in pages" ng-click="setPage(pageNo)" ng-class="{ current: page == pageNo }">{{ pageNo }}</a>
+    <div>
+        <span>
+            <span ng-switch on="page > 1">
+                <a ng-switch-when="true" ng-click="setPage(page-1)"><span class="inline-icon">&lt;</span></a>
+                <span ng-switch-when="false" class="inline-icon">&lt;</span>
+            </span>
+            <input ng-model="page" style="width: 2em; text-align: right;" ng-change="setPage(page)"> / {{ pages.length }}
+            <span ng-switch on="page < pages.length">
+                <a ng-switch-when="true" ng-click="setPage(page+1)"><span class="inline-icon">&gt;</span></a>
+                <span ng-switch-when="false" class="inline-icon">&lt;</span>
+            </span>
+        </span>
     </div>
 
 </div>

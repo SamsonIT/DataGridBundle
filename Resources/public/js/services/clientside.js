@@ -2,7 +2,7 @@ angular.module('Samson.DataGrid').factory('datagrid.driver.clientside', function
     var data = [];
     var page = 1;
     var pages = [1];
-    var itemsPerPage = 5;
+    var itemsPerPage = 25;
     var sortField;
     var sortDir;
     var filter = [];

@@ -5,60 +5,69 @@ angular.module('Samson.DataGrid')
             transclude: true,
             templateUrl: '/bundles/samsondatagrid/views/datagrid.html',
             replace: true,
-            link: function($scope, iElement, iAttr) {
-                var data = [];
-
-                if ('headerTemplate' in iAttr) {
-                    $scope.headerTemplate = iAttr['headerTemplate'];
-                }
-                if ('bodyTemplate' in iAttr) {
-                    $scope.bodyTemplate = iAttr['bodyTemplate'];
-                }
-                if ('formTemplate' in iAttr) {
-                    $scope.formTemplate = iAttr['formTemplate'];
-                }
-                if ('noResultsTemplate' in iAttr) {
-                    $scope.noResultsTemplate = iAttr['noResultsTemplate'];
-                }
-                if ('data' in iAttr) {
-                    data = angular.fromJson(iAttr['data']);
-                }
-                if ('filterColumns' in iAttr) {
-                    $scope.filterColumns = iAttr.filterColumns.split(',');
-                }
-                if ('service' in iAttr) {
-                    $scope.dataService = iAttr.service;
-                }
-                $scope.driver = 'driver' in iAttr ? iAttr['driver'] : 'clientside';
-                if(iAttr.routes) {
-                    $scope.routes = $scope.$eval('{'+iAttr.routes+'}');
-                }
-                $scope.routeParams = {};
-                if (iAttr.routeParams) {
-                    $scope.routeParams = $scope.$eval(iAttr.routeParams);
-                }
-                $scope.idMap = { id: 'row.id' };
-                if (iAttr.idMap) {
-                    $scope.idMap = $scope.$eval(iAttr.idMap);
+            compile: function(tElement, tAttr) {
+                if ('ngRowController' in tAttr) {
+                    tElement.find('tbody[ng-repeat]').attr('ng-controller', tAttr.ngRowController);
                 }
 
+                return function($scope, iElement, iAttr) {
+                    var data = [];
 
-                $scope.setData(data);
+                    if ('headerTemplate' in iAttr) {
+                        $scope.headerTemplate = iAttr['headerTemplate'];
+                    }
+                    if ('bodyTemplate' in iAttr) {
+                        $scope.bodyTemplate = iAttr['bodyTemplate'];
+                    }
+                    if ('formTemplate' in iAttr) {
+                        $scope.formTemplate = iAttr['formTemplate'];
+                    }
+                    if ('noResultsTemplate' in iAttr) {
+                        $scope.noResultsTemplate = iAttr['noResultsTemplate'];
+                    }
+                    if ('data' in iAttr) {
+                        data = angular.fromJson(iAttr['data']);
+                    }
+                    if ('filterColumns' in iAttr) {
+                        $scope.filterColumns = iAttr.filterColumns.split(',');
+                    }
+                    if ('service' in iAttr) {
+                        $scope.dataService = iAttr.service;
+                    }
+                    if ('ngRowController' in iAttr) {
+                        $scope.rowController = iAttr.ngRowController;
+                    }
+                    $scope.driver = 'driver' in iAttr ? iAttr['driver'] : 'clientside';
+                    if(iAttr.routes) {
+                        $scope.routes = $scope.$eval('{'+iAttr.routes+'}');
+                    }
+                    $scope.routeParams = {};
+                    if (iAttr.routeParams) {
+                        $scope.routeParams = $scope.$eval(iAttr.routeParams);
+                    }
+                    $scope.idMap = { id: 'row.id' };
+                    if (iAttr.idMap) {
+                        $scope.idMap = $scope.$eval(iAttr.idMap);
+                    }
 
-                setTimeout(function() {
-                    $scope.$apply(
-                        function() {
-                            var $headerCells = iElement.find('thead:eq(0) tr:eq(0)').find('th, td');
-                            var count = 0;
-                            $headerCells.each(function() {
-                                count += parseInt($(this).attr('colspan')) || 1;
-                            });
 
-                            $scope.columnCount = count;
-                        }
+                    $scope.setData(data);
 
-                    );
-                });
+                    setTimeout(function() {
+                        $scope.$apply(
+                            function() {
+                                var $headerCells = iElement.find('thead:eq(0) tr:eq(0)').find('th, td');
+                                var count = 0;
+                                $headerCells.each(function() {
+                                    count += parseInt($(this).attr('colspan')) || 1;
+                                });
+
+                                $scope.columnCount = count;
+                            }
+
+                        );
+                    });
+                }
             },
             controller: function($scope, $attrs, $templateCache, $injector, $parse, $http) {
                 $scope.editing = [];

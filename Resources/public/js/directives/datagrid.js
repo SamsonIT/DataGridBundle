@@ -225,7 +225,7 @@ angular.module('Samson.DataGrid')
 //                    self.paginateToObject(row);
                 });
                 $scope.$on('row.created', function(e, row) {
-                    callDriver('addRow', row, this.transform);
+                    callDriver('addRow', row, self.transform);
                     callDriver('update');
                     $scope.newRows.splice($scope.editing.indexOf(row), 1);
                     self.updateData();

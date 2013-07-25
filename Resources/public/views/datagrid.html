@@ -27,7 +27,7 @@
             <input ng-model="page" style="width: 2em; text-align: right;" ng-change="setPage(page)"> / {{ pages.length }}
             <span ng-switch on="page < pages.length">
                 <a ng-switch-when="true" ng-click="setPage(page+1)"><span class="inline-icon">&gt;</span></a>
-                <span ng-switch-when="false" class="inline-icon">&lt;</span>
+                <span ng-switch-when="false" class="inline-icon">&gt;</span>
             </span>
         </span>
     </div>

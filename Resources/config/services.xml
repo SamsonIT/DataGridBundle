@@ -5,9 +5,6 @@
     xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <service id="samson_datagrid.twig.extension" class="Samson\Bundle\DataGridBundle\Twig\TwigExtension">
-            <tag name="twig.extension" />
-        </service>
         <service id="samson_datagrid.knp_paginator.filter" class="Samson\Bundle\DataGridBundle\KnpPaginator\FilterSubscriber">
             <tag name="knp_paginator.subscriber"/>
             <argument type="service" id="samson.autocomplete.results_fetcher"/>

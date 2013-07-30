@@ -1,4 +1,4 @@
-angular.module('Samson.DataGrid').factory('datagrid.driver.knp-paginator', function($http, $q, $location) {
+angular.module('Samson.DataGrid').factory('datagrid.driver.knp-paginator', function($http, $q, $location, $timeout) {
     var data = [];
     var filter = '';
     var filterTimeout;
@@ -24,6 +24,8 @@ angular.module('Samson.DataGrid').factory('datagrid.driver.knp-paginator', funct
     }
 
     return {
+        loading: false,
+
         setData: function(newData, transformFn) {
             for (var i in newData.items) {
                 newData.items[i] = transformFn(newData.items[i]);
@@ -78,7 +80,9 @@ angular.module('Samson.DataGrid').factory('datagrid.driver.knp-paginator', funct
             pageParams[data.paginator_options.pageParameterName] = page;
             var routeParams = getRouteParams(pageParams);
 
+            this.loading = true;
             $http.get(generateRoute(data.route, routeParams)).success(function(newData) {
+                self.loading = false;
                 self.setData(newData, data.transformFn);
                 deferred.resolve();
 
@@ -94,7 +98,9 @@ angular.module('Samson.DataGrid').factory('datagrid.driver.knp-paginator', funct
             sortParams[data.paginator_options.sortFieldParameterName] = column;
             sortParams[data.paginator_options.sortDirectionParameterName] = data.params.sort == column ? (data.params.direction == 'desc' ? 'asc' : 'desc') : 'asc';
             var routeParams = getRouteParams(sortParams);
+            this.loading = true;
             $http.get(generateRoute(data.route, routeParams)).success(function(newData) {
+                self.loading = false;
                 self.setData(newData, data.transformFn);
                 deferred.resolve();
 
@@ -113,18 +119,20 @@ angular.module('Samson.DataGrid').factory('datagrid.driver.knp-paginator', funct
             filter = newFilter;
 
             if (filterTimeout) {
-                clearTimeout(filterTimeout);
+                $timeout.cancel(filterTimeout);
             }
 
             var self = this;
             var deferred = $q.defer();
 
-            filterTimeout = setTimeout(function() {
+            filterTimeout = $timeout(function() {
                 var pageParams = {};
                 pageParams[data.paginator_options.filterFieldParameterName] = filterFields;
                 pageParams[data.paginator_options.filterValueParameterName] = filter;
                 var routeParams = getRouteParams(pageParams);
+                self.loading = true;
                 $http.get(generateRoute(data.route, routeParams)).success(function(newData) {
+                    self.loading = false;
                     self.setData(newData, data.transformFn);
                     deferred.resolve();
 

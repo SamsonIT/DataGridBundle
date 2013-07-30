@@ -67,6 +67,23 @@ angular.module('Samson.DataGrid')
 
                         );
                     });
+
+                    var loadingEl = null;
+                    $scope.$watch('loading', function(val) {
+                        if (!val && loadingEl) {
+                            setTimeout(function() {
+                                loadingEl.width(iElement.find('.table').width()).height(iElement.find('.table').height());
+                            }, 0);
+                            loadingEl.fadeTo(500, 0, function() {
+                                loadingEl.remove();
+                                loadingEl = null;
+                            })
+                        } else if (val && !loadingEl) {
+                            loadingEl = $("<div>").appendTo('body').css({ position: 'absolute', backgroundColor: 'white' }).position({ my: 'left top', at: 'left top', of: iElement.find('.table') })
+                                .width(iElement.find('.table').width()).height(iElement.find('.table').height())
+                                .fadeTo(0, 0).fadeTo(500, .85);
+                        }
+                    })
                 }
             },
             controller: function($scope, $attrs, $templateCache, $injector, $parse, $http) {
@@ -94,11 +111,15 @@ angular.module('Samson.DataGrid')
                     callDriver('setFilterFields', newValue);
                 })
 
-                var callDriver = function(method) {
+                var getDriver = function() {
                     var driver = $injector.get('datagrid.driver.'+$scope.driver);
                     if (typeof(driver) == 'undefined') {
                         throw Error('The driver datagrid.driver.'+$scope.driver+' was not found');
                     }
+                    return driver;
+                }
+                var callDriver = function(method) {
+                    driver = getDriver();
                     if (!(method in driver)) {
                         throw Error('The driver has no method '+method);
                     }
@@ -236,6 +257,12 @@ angular.module('Samson.DataGrid')
                     callDriver('deleteRow', row);
                     $scope.editing.splice($scope.editing.indexOf(row), 1);
                     self.updateData();
+                })
+
+                $scope.$watch(function() {
+                    return getDriver().loading;
+                }, function(val) {
+                    $scope.loading = val;
                 })
             }
         };

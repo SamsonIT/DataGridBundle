@@ -41,7 +41,7 @@ angular.module('Samson.DataGrid').factory('datagrid.driver.clientside', function
         setData: function(newData, transformFn) {
             data = [];
             for (var i in newData) {
-                data.push(newData[i]);
+                data.push(transformFn(newData[i]));
             }
 
             this.update();

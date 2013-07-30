@@ -1,5 +1,25 @@
 {
     "name": "samson/data-grid-bundle",
+    "type": "symfony-bundle",
+    "description": "AngularJS based datagrid bundle for Symfony2",
+    "keywords": ["datagrid", "datatables", "angular", "angularjs"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Bart van den Burg",
+            "email": "bart@samson-it.nl",
+            "homepage": "http://www.samson-it.nl",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.0"
+    },
+    "suggest": {
+        "knplabs/knp-paginator-bundle": "necessary for knp-paginator driver",
+        "friendsofsymfony/jsrouting-bundle": "necessary for knp-paginator driver",
+        "samson/dataview-bundle": "useful for serializing data for the datagrid"
+    },
     "autoload": {
         "psr-0": {
             "Samson\\Bundle\\DataGridBundle": ""

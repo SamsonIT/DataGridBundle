@@ -1,7 +1,19 @@
-Example usage:
+SamsonDataGridBundle
+=============
+The `SamsonDataGridBundle` provides an AngularJS based table renderer. Using a simple html tag you can easily implement
+a fully interactive client side data table even supporting inline editing.
+
+### How does this work?
+
+You can find the documentation for this bundle in the `Resources/doc`
+directory of the bundle:
+
+* Read the [SamsonDataGridBundle documentation](https://github.com/SamsonIT/DataGridBundle/blob/master/Resources/doc/index.md)
+
+Basic example usage:
 --------------
 
-Clientside:
+Normal:
 ```
     <script type='text/ng-template' id="header-template.html">
         <tr>
@@ -48,7 +60,7 @@ Clientside:
     ></datagrid>
 ```
 
-Serverside:
+Server side, powered by KnpPaginator:
 ```
     <script type='text/ng-template' id="header-template.html">
         <tr>

@@ -9,6 +9,12 @@ Welcome to SamsonDataGridBundle!
 * [Basic usage](#basic-usage)
 * [A KNP paginator powered menu](#knp-paginator)
 
+**Advanced Docs**
+
+* CRUD links and inline editing (TODO)
+* Creating a service to map data to custom Javascript objects and vice versa (TODO)
+* Adding angular controllers to the grid and/or every individual row (TODO)
+
 <a name="installation"></a>
 
 ## Installation

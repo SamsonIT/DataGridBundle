@@ -11,7 +11,7 @@ Welcome to SamsonDataGridBundle!
 
 **Advanced Docs**
 
-* CRUD links and inline editing (TODO)
+* [CRUD links and inline editing](crud.md)
 * Creating a service to map data to custom Javascript objects and vice versa (TODO)
 * Adding angular controllers to the grid and/or every individual row (TODO)
 

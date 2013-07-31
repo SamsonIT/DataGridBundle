@@ -69,7 +69,7 @@ Adding a datagrid to your webpage is really easy. All you have to do is add the 
 <datagrid></datagrid>
 ```
 
-This won't do much yet, though, as there is no data in it yet. Say for example you have an array of entities in a
+This won't do much yet, though, as there is no data in it. Say for example you have an array of entities in a
 Twig variable called "entities", here's how you can add it:
 
 ``` html
@@ -80,7 +80,7 @@ Twig variable called "entities", here's how you can add it:
 
 How you serialize the entities is up to you. I suggest using the [SamsonDataViewBundle](https://github.com/SamsonIT/DataViewBundle).
 
-If you refresh now, you'd see a table with one header row, and one body row for each entity that was in the `entities` array.
+If you'd refresh now, you'd see a table with one header row, and one body row for each entity that was in the `entities` array.
 The messages are pretty clear though, you need to add body and header templates. Here's how:
 
 ``` html
@@ -104,7 +104,7 @@ These can be references to files, or to inline templates. An example header temp
 </script>
 ```
 
-You'll now see that the table has a header column. As you can see, I've added the `sortable` attribute to some of the columns.
+You'll now see that the table has a header column. Furthermore, I've added the `sortable` attribute to some of the columns.
 Defining these attributes will enable sorting on the field defined in that column. Sorting is done using the standard AngularJS
 [orderBy filter](http://docs.angularjs.org/api/ng.filter:orderBy). The text value of the attribute is used as the second argument
 to the function filter call.
@@ -147,7 +147,7 @@ That's it. You now have a full blown datagrid with sorting, pagination and quick
 
 ## A KNP paginator powered menu
 
-Note: this method requires the JSRoutingBundle and requires that your index route is exposed.
+Note: this method requires the [FOSJSRoutingBundle](https://github.com/FriendsOfSymfony/FOSJsRoutingBundle) and requires that your index route is exposed.
 
 The above example is nice for smallish data sets (it has been tested on a dataset of thousands of records, but sending
 all this data to your client at once is not going to be a big success in the long run).
@@ -166,9 +166,7 @@ In this example, the entities variable holds a [SlidingPagination object](https:
         <th sortable="e.startDate">Period</th>
     </tr>
 </script>
-```
 
-``` html
 <script type="text/ng-template" id="body-template">
     <tr>
         {% verbatim %}

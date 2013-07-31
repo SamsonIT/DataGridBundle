@@ -1,5 +1,5 @@
 Using SamsonDataGridBundle
-===================
+==========================
 
 Welcome to SamsonDataGridBundle!
 

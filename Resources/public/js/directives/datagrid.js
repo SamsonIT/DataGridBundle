@@ -12,7 +12,7 @@ angular.module('Samson.DataGrid')
                 }
 
                 return function($scope, iElement, iAttr) {
-                    var data = [];
+                    var data = null;
 
                     if ('headerTemplate' in iAttr) {
                         $scope.headerTemplate = iAttr['headerTemplate'];
@@ -52,9 +52,6 @@ angular.module('Samson.DataGrid')
                         $scope.idMap = $scope.$eval(iAttr.idMap);
                     }
 
-
-                    $scope.setData(data);
-
                     setTimeout(function() {
                         $scope.$apply(
                             function() {
@@ -86,9 +83,11 @@ angular.module('Samson.DataGrid')
                                 .fadeTo(0, 0).fadeTo(500, .85);
                         }
                     })
+
+                    $scope.setData(data);
                 }
             },
-            controller: function($scope, $attrs, $templateCache, $injector, $parse, $http) {
+            controller: function($scope, $attrs, $templateCache, $injector, $parse, $q) {
                 $scope.editing = [];
                 $scope.newRows = [];
 
@@ -135,12 +134,26 @@ angular.module('Samson.DataGrid')
 
                     var service = $injector.get($scope.dataService);
 
-                    return service.transformResponse(data);
+                    return 'transformResponse' in service ? service.transformResponse(data) : data;
                 }
 
                 $scope.setData = function(data) {
-                    callDriver('setData', data, self.transform);
-                    self.updateData();
+                    if (null === data) {
+                        service = $injector.get($scope.dataService);
+                        if ('getData' in service) {
+                            data = service.getData();
+                        }
+                    }
+
+                    getDriver().loading = true;
+                    $q.when(data).then(function(data) {
+                        callDriver('setData', data, self.transform);
+                        getDriver().loading = false;
+
+                        self.updateData();
+                    }, function(reason) {
+                        throw Error('Error while fetching data: '+reason);
+                    });
                 }
                 this.updateData = function() {
                     var properties = ['visibleRows', 'firstResult', 'lastResult', 'totalResults', 'filteredResults', 'page', 'pages', 'sort'];

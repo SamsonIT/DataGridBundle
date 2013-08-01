@@ -215,12 +215,21 @@ angular.module('Samson.DataGrid')
                 }
 
                 $scope.edit = function(row) {
+                    row.$originalData = angular.copy(row);
                     $scope.editing.push(row);
                 }
                 $scope.create = function() {
                     $scope.newRows.push(self.transform({}));
                 }
                 $scope.cancel = function(row) {
+                    var newRowsIndex = $scope.newRows.indexOf(row);
+                    if (newRowsIndex > -1) {
+                        $scope.newRows.splice(newRowsIndex, 1);
+                        return;
+                    }
+
+                    angular.copy(row.$originalData, row);
+                    delete row.$originalData;
                     $scope.editing.splice($scope.editing.indexOf(row), 1);
                 }
 

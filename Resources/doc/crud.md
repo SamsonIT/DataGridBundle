@@ -131,7 +131,13 @@ After:
     <a ng-click="{{ delete(row) }}">Delete entity</a>
 ```
 
-Note that the create, edit and delete actions expect the following from your controllers:
+You are free to handle the requests by yourself, but for convenience sake, we have created a helper service which will
+ease things up for you: [samson_datagrid.controller_helper](../../Helper/ControllerHelper.php).
+
+To make things even more easy, we have created a abstract controller with
+some methods to help you on the way: [AbstractDataGridController](../../Controller/AbstractDataGridController.php).
+
+If you choose to handle the requests on your own, note the following expectations from your controller:
 
   - The create action will be called with method POST
   - The edit action will be called with method PUT

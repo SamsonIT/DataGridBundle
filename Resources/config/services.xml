@@ -12,5 +12,10 @@
                 <argument type="service" id="request" on-invalid="null" strict="false"/>
             </call>
         </service>
+
+        <service id="samson_datagrid.controller_helper" class="Samson\Bundle\DataGridBundle\Helper\ControllerHelper">
+            <argument type="service" id="form.factory"/>
+            <argument type="service" id="doctrine.orm.default_entity_manager"/>
+        </service>
     </services>
 </container>

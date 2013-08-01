@@ -250,7 +250,7 @@ angular.module('Samson.DataGrid')
 
                 $scope.$on('row.updated', function(e, row) {
                     $scope.editing.splice($scope.editing.indexOf(row), 1);
-                    angular.copy(this.transform(row), row);
+                    angular.copy(self.transform(row), row);
                     self.updateData();
 //                    self.paginateToObject(row);
                 });

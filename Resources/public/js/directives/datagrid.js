@@ -3,6 +3,7 @@ angular.module('Samson.DataGrid')
         var directiveDefinitionObject = {
             restrict: 'E',
             transclude: true,
+            scope: 'isolate',
             templateUrl: '/bundles/samsondatagrid/views/datagrid.html',
             replace: true,
             compile: function(tElement, tAttr) {
@@ -37,7 +38,8 @@ angular.module('Samson.DataGrid')
                     if ('ngRowController' in iAttr) {
                         $scope.rowController = iAttr.ngRowController;
                     }
-                    $scope.driver = 'driver' in iAttr ? iAttr['driver'] : 'clientside';
+                    $scope.driver = $scope.instantiateDriver('driver' in iAttr ? iAttr['driver'] : 'clientside');
+
                     if(iAttr.routes) {
                         $scope.routes = $scope.$eval('{'+iAttr.routes+'}');
                     }
@@ -111,12 +113,12 @@ angular.module('Samson.DataGrid')
                     callDriver('setFilterFields', newValue);
                 })
 
+                $scope.instantiateDriver = function(name) {
+                    return $injector.instantiate(drivers[name]);
+                }
+
                 var getDriver = function() {
-                    var driver = $injector.get('datagrid.driver.'+$scope.driver);
-                    if (typeof(driver) == 'undefined') {
-                        throw Error('The driver datagrid.driver.'+$scope.driver+' was not found');
-                    }
-                    return driver;
+                    return $scope.driver;
                 }
                 var callDriver = function(method) {
                     driver = getDriver();

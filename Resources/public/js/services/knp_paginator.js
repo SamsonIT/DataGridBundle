@@ -1,4 +1,5 @@
-angular.module('Samson.DataGrid').factory('datagrid.driver.knp-paginator', function($http, $q, $location, $timeout) {
+var drivers = drivers || {};
+drivers['knp-paginator'] = function($http, $q, $location, $timeout) {
     var data = [];
     var filter = '';
     var filterTimeout;
@@ -143,4 +144,4 @@ angular.module('Samson.DataGrid').factory('datagrid.driver.knp-paginator', funct
             return deferred.promise;
         }
     }
-})
+}

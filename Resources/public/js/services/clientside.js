@@ -1,4 +1,5 @@
-angular.module('Samson.DataGrid').factory('datagrid.driver.clientside', function($http, $q, $filter, $parse) {
+var drivers = drivers || {};
+drivers['clientside'] = function($http, $q, $filter, $parse) {
     var data = [];
     var page = 1;
     var pages = [1];
@@ -135,4 +136,4 @@ angular.module('Samson.DataGrid').factory('datagrid.driver.clientside', function
             this.update();
         }
     }
-})
+};

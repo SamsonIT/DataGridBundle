@@ -2,6 +2,7 @@
 
 namespace Samson\Bundle\DataGridBundle\Controller;
 
+use Samson\Bundle\DataGridBundle\Helper\Exception\ValidationException;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -31,7 +32,7 @@ abstract class AbstractDataGridController extends Controller
 
         try {
             $this->getHelper()->update($entity, $this->getHelperConfiguration()->getFormType(), json_decode($this->getRequest()->getContent(), true));
-        } catch (Exception\ValidationException $e) {
+        } catch (ValidationException $e) {
             return new Response($this->get('jms_serializer')->serialize($e->getForm(), 'json'), 400);
         }
 

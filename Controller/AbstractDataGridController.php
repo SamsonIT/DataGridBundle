@@ -45,6 +45,8 @@ abstract class AbstractDataGridController extends Controller
 
     protected function handleCreate($entity)
     {
+        $em = $this->getDoctrine()->getManager();
+        $em->persist($entity);
         return call_user_func_array(array($this, 'handleEdit'), func_get_args());
     }
 

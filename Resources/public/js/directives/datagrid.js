@@ -431,7 +431,7 @@ angular.module('Samson.DataGrid')
         return {
             restrict: 'E',
             replace: true,
-            template: '<input type="text" ng-model="$parent.filter" ng-list="/\s+/">'
+            template: '<input type="text" ng-model="$parent.filter" ng-list="/\\s+/">'
         }
     })
 ;

@@ -1,5 +1,7 @@
 <div>
-    <div class="quick-filter" ng-show="filterColumns"><span class="inline-icon" style="font-size: 20px;">s</span> <input type="text" ng-model="filter" ng-list="/\s+/"></div>
+    <ng-include src="filterTemplate" ng-show="filterColumns">
+
+    </ng-include>
 
     <div class="table">
         <table class="list" cellspacing="0" cellpadding="0">

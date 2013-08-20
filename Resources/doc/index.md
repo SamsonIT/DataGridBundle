@@ -233,3 +233,19 @@ For example, you can implement is as follows:
 The knp-paginator driver will add the _format attribute to all generated URL's.
 
 That's it. Your datagrid now works server side.
+
+## Override the filter-template
+
+It's possible to add your own filter-template. Add a filter-template attribute to the datagrid like this, and create a filter template:
+
+```html
+<datagrid
+    [...]
+    filter-template="filter-template"
+></datagrid>
+<script type="text/ng-template" id="filter-template">
+<div>
+    <h3>Filter</h3><datagrid-filterbox class="myClass" placeholder="Filter..."></datagrid-filterbox>
+</div>
+</script>
+```

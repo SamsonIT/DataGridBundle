@@ -38,6 +38,9 @@ angular.module('Samson.DataGrid')
                     if ('ngRowController' in iAttr) {
                         $scope.rowController = iAttr.ngRowController;
                     }
+                    if ('filterTemplate' in iAttr){
+                        $scope.filterTemplate = iAttr.filterTemplate;
+                    }
                     $scope.driver = $scope.instantiateDriver('driver' in iAttr ? iAttr['driver'] : 'clientside');
 
                     if(iAttr.routes) {
@@ -105,6 +108,7 @@ angular.module('Samson.DataGrid')
                 $scope.noResultsTemplate = 'datagrid-no-results.html';
                 $templateCache.put('datagrid-no-results.html', '<td colspan="{{ columnCount }}">No results</td>');
                 $scope.driver = 'clientside';
+                $scope.filterTemplate = '/bundles/samsondatagrid/views/filter.html';
 
                 $scope.visibleRows = [];
 
@@ -422,6 +426,12 @@ angular.module('Samson.DataGrid')
                     }
                 })
             }
+        }
+    }).directive('datagridFilterbox', function(){
+        return {
+            restrict: 'E',
+            replace: true,
+            template: '<input type="text" ng-model="$parent.filter" ng-list="/\s+/">'
         }
     })
 ;

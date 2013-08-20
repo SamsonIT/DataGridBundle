@@ -24,9 +24,8 @@ drivers['clientside'] = function($http, $q, $filter, $parse) {
             var value = filter[j].toLowerCase();
             var found = false
             for (var i in filterFields) {
-                var field = $parse(filterFields[i]);
-
-                if (field(row).toLowerCase().indexOf(value) > -1) {
+                var field = $parse(filterFields[i])(row);
+                if ( 'undefined' !== typeof(field) && field.toLowerCase().indexOf(value) > -1) {
                     found = true;
                     break;
                 }

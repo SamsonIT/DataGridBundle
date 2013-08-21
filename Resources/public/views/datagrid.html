@@ -5,6 +5,7 @@
 
     <div class="table">
         <table class="list">
+            <ng-include src="colgroupTemplate" datagrid-if="colgroupTemplate"></ng-include>
             <thead ng-include="headerTemplate"></thead>
             <tbody ng-repeat="row in visibleRows" ng-include="getRowTemplate(row)" datagrid-row></tbody>
             <tbody ng-repeat="row in newRows" ng-include="formTemplate" datagrid-row></tbody>

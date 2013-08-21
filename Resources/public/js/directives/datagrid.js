@@ -41,6 +41,9 @@ angular.module('Samson.DataGrid')
                     if ('filterTemplate' in iAttr){
                         $scope.filterTemplate = iAttr.filterTemplate;
                     }
+                    if ('colgroupTemplate' in iAttr){
+                        $scope.colgroupTemplate = iAttr.colgroupTemplate;
+                    }
                     $scope.driver = $scope.instantiateDriver('driver' in iAttr ? iAttr['driver'] : 'clientside');
 
                     if(iAttr.routes) {
@@ -109,6 +112,7 @@ angular.module('Samson.DataGrid')
                 $templateCache.put('datagrid-no-results.html', '<td colspan="{{ columnCount }}">No results</td>');
                 $scope.driver = 'clientside';
                 $scope.filterTemplate = '/bundles/samsondatagrid/views/filter.html';
+                $scope.colgroupTemplate = null;
 
                 $scope.visibleRows = [];
 

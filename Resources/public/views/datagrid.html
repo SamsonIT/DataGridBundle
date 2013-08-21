@@ -4,7 +4,7 @@
     </ng-include>
 
     <div class="table">
-        <table class="list" cellspacing="0" cellpadding="0">
+        <table class="list">
             <thead ng-include="headerTemplate"></thead>
             <tbody ng-repeat="row in visibleRows" ng-include="getRowTemplate(row)" datagrid-row></tbody>
             <tbody ng-repeat="row in newRows" ng-include="formTemplate" datagrid-row></tbody>
@@ -14,16 +14,16 @@
 
     <p class="table-info">{{ firstResult }} through {{ lastResult }} of {{ filteredResults }} results displayed (total: {{ totalResults }})</p>
 
-    <div>
+    <div class="pagination">
         <span>
             <span ng-switch on="page > 1">
-                <a ng-switch-when="true" ng-click="setPage(page-1)"><span class="inline-icon">&lt;</span></a>
-                <span ng-switch-when="false" class="inline-icon">&lt;</span>
+                <a ng-switch-when="true" ng-click="setPage(page-1)"><span class="inline-icon-mp">&lt;</span></a>
+                <span ng-switch-when="false" class="inline-icon-mp">&lt;</span>
             </span>
             <input ng-model="page" style="width: 2em; text-align: right;" ng-change="setPage(page)"> / {{ pages.length }}
             <span ng-switch on="page < pages.length">
-                <a ng-switch-when="true" ng-click="setPage(page+1)"><span class="inline-icon">&gt;</span></a>
-                <span ng-switch-when="false" class="inline-icon">&gt;</span>
+                <a ng-switch-when="true" ng-click="setPage(page+1)"><span class="inline-icon-mp">&gt;</span></a>
+                <span ng-switch-when="false" class="inline-icon-mp">&gt;</span>
             </span>
         </span>
     </div>

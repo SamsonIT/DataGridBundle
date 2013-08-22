@@ -15,7 +15,7 @@ abstract class AbstractDataGridController extends Controller
      */
     abstract protected function getHelperConfiguration();
 
-    private function getHelper()
+    protected function getHelper()
     {
         return $this->get('samson_datagrid.controller_helper');
     }

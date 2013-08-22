@@ -349,11 +349,18 @@ angular.module('Samson.DataGrid')
                         $scope.$broadcast('errors.updated', {});
                         $scope.hasErrors = false;
 
-                        angular.copy(data, row);
                         if (method == 'put') {
+                            angular.copy(data, row);
                             $scope.$emit('row.updated', row);
                         } else {
-                            $scope.$emit('row.created', row);
+                            if (angular.isArray(data)) {
+                                for (var i in data) {
+                                    $scope.$emit('row.created', data[i]);
+                                }
+                            } else {
+                                angular.copy(data, row);
+                                $scope.$emit('row.created', row);
+                            }
                         }
                     }).error(function(data) {
                         data.errors = data.errors || [];

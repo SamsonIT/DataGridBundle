@@ -363,8 +363,12 @@ angular.module('Samson.DataGrid')
                             }
                         }
                     }).error(function(data) {
-                        data.errors = data.errors || [];
-                        data.errors.unshift('The form has errors');
+                        if (angular.isObject(data)) {
+                            data.errors = data.errors || [];
+                            data.errors.unshift('The form has errors');
+                        } else {
+                            data = { errors: 'An error occurred while saving' };
+                        }
                         $scope.hasErrors = true;
                         $scope.$broadcast('errors.updated', data);
                     });

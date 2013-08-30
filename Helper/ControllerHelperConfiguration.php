@@ -40,6 +40,7 @@ class ControllerHelperConfiguration
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
         $resolver->setDefaults(array(
+            'form_options' => array()
         ));
     }
 

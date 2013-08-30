@@ -22,7 +22,7 @@ abstract class AbstractDataGridController extends Controller
 
     protected function getList($entities)
     {
-        return $this->getHelper()->index($this->getHelperConfiguration(), $entities);
+        return $this->getHelper()->index($this->getHelperConfiguration()->getView(), $entities);
     }
 
     protected function handleEdit($entity)
@@ -30,8 +30,9 @@ abstract class AbstractDataGridController extends Controller
 
         $em = $this->getDoctrine()->getManager();
 
+        $options = $this->getHelperConfiguration()->getOptions();
         try {
-            $this->getHelper()->update($entity, $this->getHelperConfiguration()->getFormType(), json_decode($this->getRequest()->getContent(), true));
+            $this->getHelper()->update($entity, $this->getHelperConfiguration()->getFormType(), json_decode($this->getRequest()->getContent(), true), $options['form_options']);
         } catch (ValidationException $e) {
             return new Response($this->get('jms_serializer')->serialize($e->getForm(), 'json'), 400);
         }

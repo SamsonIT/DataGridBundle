@@ -170,7 +170,7 @@ angular.module('Samson.DataGrid')
                         $scope[property] = callDriver('get'+ property.charAt(0).toUpperCase() + property.slice(1));
                     }
 
-                    return;
+                    $scope.$broadcast('data.updated', callDriver('getVisibleRows'));
                 }
 
                 $scope.setPage = function(page) {

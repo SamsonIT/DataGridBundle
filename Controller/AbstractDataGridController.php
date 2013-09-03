@@ -37,6 +37,7 @@ abstract class AbstractDataGridController extends Controller
             return new Response($this->get('jms_serializer')->serialize($e->getForm(), 'json'), 400);
         }
 
+        $em->persist($entity);
         $em->flush();
         $view = $this->getHelperConfiguration()->getView();
         $view->serialize($entity);
@@ -47,7 +48,6 @@ abstract class AbstractDataGridController extends Controller
     protected function handleCreate($entity)
     {
         $em = $this->getDoctrine()->getManager();
-        $em->persist($entity);
         return call_user_func_array(array($this, 'handleEdit'), func_get_args());
     }
 

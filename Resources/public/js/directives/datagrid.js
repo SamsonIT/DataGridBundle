@@ -432,15 +432,26 @@ angular.module('Samson.DataGrid')
     }).directive('rowClick', function() {
         return {
             restrict: 'A',
-            link: function($scope, iElement) {
-                iElement.closest('tr')
+            link: function($scope, iElement, iAttr) {
+                var $row = iElement.closest('tr');
+
+                var action = function() {
+                    if (iElement.prop('tagName') == 'A' && !iAttr['dataDialog']) {
+                        window.location.href = iAttr.href;
+                    } else {
+                        iElement.trigger('click');
+                    }
+                }
+
+                $row
                     .css('cursor', 'pointer')
                     .on('click', function(e) {
-                    if (!$(e.target).is('a') && !($(e.target).closest('a, input').length)) {
-                        iElement.click();
-                        e.preventDefault();
-                    }
-                })
+                        if (!$(e.target).is('a') && !($(e.target).closest('a, input').length)) {
+                            action();
+                            e.preventDefault();
+                        }
+                    })
+                ;
             }
         }
     }).directive('datagridFilterbox', function(){

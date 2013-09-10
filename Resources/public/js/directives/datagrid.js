@@ -416,10 +416,10 @@ angular.module('Samson.DataGrid')
 
                 $scope.$watch('sort', function(newValue) {
                     if (typeof(newValue) != 'undefined') {
-                        iElement.removeClass('sorting sorting_asc sorting_desc');
+                        iElement.removeClass('sorting sorting-asc sorting-desc');
 
                         if (name == newValue[0]) {
-                            iElement.addClass('sorting_'+newValue[1]);
+                            iElement.addClass('sorting-'+newValue[1]);
                         } else {
                             iElement.addClass('sorting');
                         }

@@ -96,6 +96,7 @@ angular.module('Samson.DataGrid')
             controller: function($scope, $attrs, $templateCache, $injector, $parse, $q) {
                 $scope.editing = [];
                 $scope.newRows = [];
+                $scope.filter = {};
 
                 this.getDataService = function() {
                     return $scope.dataService;
@@ -257,7 +258,7 @@ angular.module('Samson.DataGrid')
                 }
 
 
-                $scope.$watch('filter', function(newValue) {
+                $scope.$watch('filter.value', function(newValue) {
                     var result = callDriver('filter', newValue);
 
                     if (angular.isObject(result) && 'then' in result) {
@@ -446,7 +447,7 @@ angular.module('Samson.DataGrid')
         return {
             restrict: 'E',
             replace: true,
-            template: '<input type="text" ng-model="$parent.filter" ng-list="/\\s+/">'
+            template: '<input type="text" ng-model="filter.value" ng-list="/\\s+/">'
         }
     })
 ;

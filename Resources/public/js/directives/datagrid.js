@@ -239,7 +239,10 @@ angular.module('Samson.DataGrid')
                 }
 
                 $scope.edit = function(row) {
-                    row.$originalData = angular.copy(row);
+                    row.$originalData = {};
+                    for (var i in row) {
+                        row.$originalData[i] = row[i];
+                    }
                     $scope.editing.push(row);
                 }
                 $scope.create = function() {
@@ -274,7 +277,10 @@ angular.module('Samson.DataGrid')
 
                 $scope.$on('row.updated', function(e, row) {
                     $scope.editing.splice($scope.editing.indexOf(row), 1);
-                    angular.copy(self.transform(row), row);
+                    var transformedRow = self.transform(row);
+                    for (var i in transformedRow) {
+                        row[i] = transformedRow[i];
+                    }
                     self.updateData();
 //                    self.paginateToObject(row);
                 });

@@ -37,7 +37,7 @@ class ControllerHelper
         return call_user_func_array(array($this, 'update'), func_get_args());
     }
 
-    public function update($entity, $formType, array $data, array $formOptions)
+    public function update($entity, $formType, array $data, array $formOptions = array())
     {
         $form = $this->formFactory->create($formType, $entity, array_merge(array('csrf_protection' => false), $formOptions));
 

@@ -241,6 +241,9 @@ angular.module('Samson.DataGrid')
                 $scope.edit = function(row) {
                     row.$originalData = {};
                     for (var i in row) {
+                        if (i == '$originalData') {
+                            continue;
+                        }
                         row.$originalData[i] = row[i];
                     }
                     $scope.editing.push(row);
@@ -255,6 +258,9 @@ angular.module('Samson.DataGrid')
                         return;
                     }
 
+                    for (var i in row.$originalData) {
+                        row[i] = row.$originalData[i];
+                    }
                     angular.copy(row.$originalData, row);
                     delete row.$originalData;
                     $scope.editing.splice($scope.editing.indexOf(row), 1);

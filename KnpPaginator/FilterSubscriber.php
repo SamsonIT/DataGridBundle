@@ -35,7 +35,7 @@ class FilterSubscriber implements EventSubscriberInterface
                 $fields = $this->assertArray($_GET[$event->options['filterFieldParameterName']], ",");
                 $values = $this->assertArray($_GET[$event->options['filterValueParameterName']], "/\s+/");
 
-                $this->fetcher->getResultsByArray($values, $qb, $fields);
+                $this->fetcher->getResultsByArray($values, isset($_GET['page']) ? $_GET['page'] : 1, $qb, $fields);
             }
         }
     }

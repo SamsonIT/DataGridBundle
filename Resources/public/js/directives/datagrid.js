@@ -227,6 +227,9 @@ angular.module('Samson.DataGrid')
                     extraParams = typeof(extraParams) == 'undefined' ? {} : extraParams;
                     return Routing.generate($scope.routes['create'], generateParams(extraParams));
                 }
+                $scope.viewPath = function(row, extraParams) {
+                    return Routing.generate($scope.routes['view'], generateIdParams(row, extraParams));
+                }
                 $scope.editPath = function(row, extraParams) {
                     return Routing.generate($scope.routes['edit'], generateIdParams(row, extraParams));
                 }

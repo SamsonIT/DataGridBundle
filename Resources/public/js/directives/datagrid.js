@@ -93,7 +93,7 @@ angular.module('Samson.DataGrid')
                     $scope.setData(data);
                 }
             },
-            controller: function($scope, $attrs, $templateCache, $injector, $parse, $q) {
+            controller: function($scope, $attrs, $templateCache, $injector, $parse, $q, $timeout) {
                 $scope.editing = [];
                 $scope.newRows = [];
                 $scope.filter = {};
@@ -175,17 +175,23 @@ angular.module('Samson.DataGrid')
                 }
 
                 $scope.setPage = function(page) {
-                    var result = callDriver('setPage', page);
-
-                    if (angular.isObject(result) && 'then' in result) {
-                        result.then(function() {
-                            self.updateData();
-                        });
-
-                        return;
+                    if( $scope.waiting ) {
+                        $timeout.cancel($scope.waiting);
                     }
+                    $scope.waiting = $timeout( function(){
+                        var result = callDriver('setPage', page);
 
-                    self.updateData();
+                        if (angular.isObject(result) && 'then' in result) {
+                            result.then(function() {
+                                self.updateData();
+                            });
+
+                            return;
+                        }
+
+                        self.updateData();
+                    },200)
+
                 }
 
                 this.sort = function(sortField) {

@@ -258,7 +258,9 @@ angular.module('Samson.DataGrid')
                     $scope.editing.push(row);
                 }
                 $scope.create = function() {
-                    $scope.newRows.push(self.transform({}));
+                    var row = self.transform({});
+                    $scope.newRows.push(row);
+                    return row;
                 }
                 $scope.cancel = function(row) {
                     var newRowsIndex = $scope.newRows.indexOf(row);

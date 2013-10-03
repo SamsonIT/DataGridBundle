@@ -128,7 +128,9 @@ drivers['clientside'] = function($http, $q, $filter, $parse) {
             return [sortField, sortDir];
         },
         addRow: function(row, transformFn) {
-            data.push(transformFn(row));
+            row = transformFn(row);
+            data.push(row);
+            return row;
         },
         deleteRow: function(row) {
             data.splice(data.indexOf(row), 1);

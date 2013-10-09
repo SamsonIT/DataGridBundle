@@ -130,6 +130,7 @@ drivers['clientside'] = function($http, $q, $filter, $parse) {
         addRow: function(row, transformFn) {
             row = transformFn(row);
             data.push(row);
+            this.update();
             return row;
         },
         deleteRow: function(row) {

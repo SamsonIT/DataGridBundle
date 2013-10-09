@@ -146,9 +146,15 @@ angular.module('Samson.DataGrid')
                     return 'transformResponse' in service ? service.transformResponse(data) : data;
                 }
 
+                this.addRow = function(data) {
+                    callDriver('addRow', data, self.transform);
+                    self.updateData();
+                }
+
                 $scope.setData = function(data) {
                     if (null === data) {
                         service = $injector.get($scope.dataService);
+                        service.datagridCtrl = self;
                         if ('getData' in service) {
                             data = service.getData();
                         }

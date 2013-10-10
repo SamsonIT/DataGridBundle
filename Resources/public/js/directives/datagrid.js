@@ -150,6 +150,9 @@ angular.module('Samson.DataGrid')
                     callDriver('addRow', data, self.transform);
                     self.updateData();
                 }
+                this.refresh = function() {
+                    $q.when(callDriver('setPage', $scope.page)).then(self.updateData);
+                }
 
                 $scope.setData = function(data) {
                     if (null === data) {

@@ -26,11 +26,13 @@ angular.module('Samson.DataGrid')
                     if ('noResultsTemplate' in iAttr) {
                         $scope.noResultsTemplate = iAttr['noResultsTemplate'];
                     }
-                    if ('data' in iAttr) {
-                        data = angular.fromJson(iAttr['data']);
-                    }
                     if ('filterColumns' in iAttr) {
                         $scope.filterColumns = iAttr.filterColumns.split(',');
+                    }
+                    if ($scope.data) {
+                        data = $scope.data;
+                    } else if ('data' in iAttr) {
+                       data = angular.fromJson(iAttr['data']);
                     }
                     if ('service' in iAttr) {
                         $scope.dataService = iAttr.service;

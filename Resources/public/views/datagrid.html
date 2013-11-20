@@ -21,7 +21,7 @@
                 <a ng-switch-when="true" ng-click="setPage(page-1)"><span class="inline-icon-mp">&lt;</span></a>
                 <span ng-switch-when="false" class="inline-icon-mp">&lt;</span>
             </span>
-            <input ng-model="page" style="width: 2em; text-align: right;" ng-change="setPage(page)"> / {{ pages.length }}
+            <input ng-if="pages.length" ng-model="page" style="width: 2em; text-align: right;" ng-change="setPage(page)"><span ng-if="!pages.length">0</span> / {{ pages.length }}
             <span ng-switch on="page < pages.length">
                 <a ng-switch-when="true" ng-click="setPage(page+1)"><span class="inline-icon-mp">&gt;</span></a>
                 <span ng-switch-when="false" class="inline-icon-mp">&gt;</span>

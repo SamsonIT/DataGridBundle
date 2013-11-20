@@ -3,7 +3,7 @@ drivers['clientside'] = function($http, $q, $filter, $parse) {
     var data = [];
     var page = 1;
     var pages = [1];
-    var itemsPerPage = 25;
+    var itemsPerPage = 50;
     var sortField;
     var sortDir;
     var filter = [];

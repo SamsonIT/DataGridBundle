@@ -3,7 +3,7 @@ angular.module('Samson.DataGrid')
         var directiveDefinitionObject = {
             restrict: 'E',
             transclude: true,
-            scope: 'isolate',
+            scope: {},
             templateUrl: '/bundles/samsondatagrid/views/datagrid.html',
             replace: true,
             compile: function(tElement, tAttr) {

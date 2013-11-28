@@ -7,8 +7,9 @@
         <table class="list">
             <colgroup ng-include="colgroupTemplate && colgroupTemplate"></colgroup>
             <thead ng-include="headerTemplate"></thead>
-            <tbody ng-repeat="row in newRows" ng-include="formTemplate" datagrid-row></tbody>
-            <tbody ng-repeat="row in visibleRows" ng-include="getRowTemplate(row)" datagrid-row></tbody>
+            <tbody ng-repeat="row in newRows" datagrid-row ng-form="form"></tbody>
+            <tbody ng-repeat="row in visibleRows" datagrid-row ng-form="form"></tbody>
+            <!--ng-include="getRowTemplate(row)"-->
             <tbody><tr ng-include='!visibleRows.length && !newRows.length && noResultsTemplate'></tr></tbody>
         </table>
     </div>

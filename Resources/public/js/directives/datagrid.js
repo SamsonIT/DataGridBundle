@@ -255,7 +255,7 @@ angular.module('Samson.DataGrid')
                 }
 
                 $scope.getRowTemplate = function(row) {
-                    return $scope.editing.indexOf(row) > -1 ? $scope.formTemplate : $scope.bodyTemplate;
+                    return $scope.editing.indexOf(row) > -1 || $scope.newRows.indexOf(row) > -1 ? $scope.formTemplate : $scope.bodyTemplate;
                 }
 
                 $scope.edit = function(row) {
@@ -334,7 +334,7 @@ angular.module('Samson.DataGrid')
             }
         };
         return directiveDefinitionObject;
-    }).directive('datagridRow', function() {
+    }).directive('datagridRow', function($compile, $templateCache, $q) {
         return {
             restrict: 'A',
             require: '^datagrid',
@@ -342,6 +342,22 @@ angular.module('Samson.DataGrid')
                 if (datagridCtrl.getDataService()) {
                     $scope.setDataService(datagridCtrl.getDataService());
                 }
+
+                $scope.$watch(function() {
+                    return $scope.getRowTemplate($scope.row);
+                }, function(newTemplateId) {
+                    $q.when($templateCache.get(newTemplateId)).then(function(template) {
+                        var $template = $(template);
+                        $template.find('input[name], textarea[name], select[name]').each(function() {
+                           $(this).attr('tooltip', '{{ errors["'+$(this).attr('name')+'"] }}').attr('tooltip-html', true);
+                        });
+
+                        $compile($template)($scope, function(clonedElement) {
+                            iElement.empty().append(clonedElement);
+                        });
+                    });
+                });
+
             },
             controller: function($scope, $http, $injector) {
                 $scope.hasErrors = false;
@@ -400,6 +416,7 @@ angular.module('Samson.DataGrid')
                             }
                         }
                     }).error(function(data) {
+
                         if (angular.isObject(data)) {
                             data.errors = data.errors || [];
                             data.errors.unshift('The form has errors');
@@ -408,6 +425,23 @@ angular.module('Samson.DataGrid')
                         }
                         $scope.hasErrors = true;
                         $scope.$broadcast('errors.updated', data);
+
+                        var errors = new ErrorContainer(data);
+                        $scope.errors = {};
+
+                        for (var i in $scope.form) {
+                            if (i[0] == '$') {
+                                continue;
+                            }
+
+                            var fieldErrors = errors.read(i);
+                            $scope.form[i].$setValidity('server', !fieldErrors.length);
+                            $scope.errors[i] = "<ul>";
+                            fieldErrors.forEach(function(error) {
+                                $scope.errors[i] += "<li>"+error+"</li>";
+                            });
+                            $scope.errors[i] += "</ul>";
+                        }
                     });
                 }
             }

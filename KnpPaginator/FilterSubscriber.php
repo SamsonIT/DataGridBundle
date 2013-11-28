@@ -26,6 +26,9 @@ class FilterSubscriber implements EventSubscriberInterface
 
     public function items(ItemsEvent $event)
     {
+        if (!$this->request) {
+            return;
+        }
         $qb = $event->target;
 
         if ($event->target instanceof QueryBuilder) {

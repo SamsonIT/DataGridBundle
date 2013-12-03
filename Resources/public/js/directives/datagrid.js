@@ -334,7 +334,7 @@ angular.module('Samson.DataGrid')
             }
         };
         return directiveDefinitionObject;
-    }).directive('datagridRow', function($compile, $templateCache, $q) {
+    }).directive('datagridRow', function($compile, $templateCache, $http) {
         return {
             restrict: 'A',
             require: '^datagrid',
@@ -346,7 +346,7 @@ angular.module('Samson.DataGrid')
                 $scope.$watch(function() {
                     return $scope.getRowTemplate($scope.row);
                 }, function(newTemplateId) {
-                    $q.when($templateCache.get(newTemplateId)).then(function(template) {
+                    $http.get(newTemplateId, {cache: $templateCache}).success(function(template) {
                         var $template = $(template);
                         $template.find('input[name], textarea[name], select[name]').each(function() {
                            $(this).attr('tooltip', '{{ errors["'+$(this).attr('name')+'"] }}').attr('tooltip-html', true);

@@ -16,7 +16,7 @@
 
     <p class="table-info">{{ firstResult }} through {{ lastResult }} of {{ filteredResults }} results displayed (total: {{ totalResults }})</p>
 
-    <div class="pagination">
+    <div class="pagination" ng-if="pages.length != 1">
         <span>
             <span ng-switch on="page > 1">
                 <a ng-switch-when="true" ng-click="setPage(page-1)"><span class="inline-icon-mp">&lt;</span></a>

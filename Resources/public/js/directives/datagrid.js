@@ -1,5 +1,15 @@
 angular.module('Samson.DataGrid')
-    .directive('datagrid', function() {
+    .directive('datagrid', function($locale) {
+
+        switch($locale.id) {
+            case 'nl-nl':
+                var resultDataText = "{{ firstResult }} t/m {{ lastResult }} van {{ filteredResults }} resultaten getoond (totaal: {{ totalResults }})";
+                break;
+            default:
+                var resultDataText = "{{ firstResult }} through {{ lastResult }} of {{ filteredResults }} results displayed (total: {{ totalResults }})";
+                break;
+        }
+
         var directiveDefinitionObject = {
             restrict: 'E',
             transclude: true,
@@ -95,7 +105,7 @@ angular.module('Samson.DataGrid')
                     $scope.setData(data);
                 }
             },
-            controller: function($scope, $attrs, $templateCache, $injector, $parse, $q, $timeout) {
+            controller: function($scope, $templateCache, $injector, $parse, $q, $timeout, $interpolate) {
                 $scope.editing = [];
                 $scope.newRows = [];
                 $scope.filter = {};
@@ -331,6 +341,10 @@ angular.module('Samson.DataGrid')
                 }, function(val) {
                     $scope.loading = val;
                 })
+
+                $scope.$watch('firstResult + lastResult + filteredResults + totalResults', function() {
+                    $scope.resultData = $interpolate(resultDataText)($scope);
+                });
             }
         };
         return directiveDefinitionObject;

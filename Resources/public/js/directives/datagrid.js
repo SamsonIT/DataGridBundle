@@ -298,7 +298,6 @@ angular.module('Samson.DataGrid')
                     $scope.editing.splice($scope.editing.indexOf(row), 1);
                 }
 
-
                 $scope.$watch('filter.value', function(newValue) {
                     var result = callDriver('filter', newValue);
 
@@ -311,7 +310,7 @@ angular.module('Samson.DataGrid')
                     }
 
                     self.updateData();
-                })
+                }, true );
 
                 $scope.$on('row.updated', function(e, row) {
                     $scope.editing.splice($scope.editing.indexOf(row), 1);

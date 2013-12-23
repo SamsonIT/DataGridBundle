@@ -541,7 +541,7 @@ angular.module('Samson.DataGrid')
         return {
             restrict: 'E',
             replace: true,
-            template: '<input type="text" ng-model="filter.value" ng-list="/\\s+/">'
+            template: '<input type="text" ng-model="filter.value" ng-list="/\\s+/" autocapitalize="off">'
         }
     })
 ;

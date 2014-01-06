@@ -36,6 +36,9 @@ angular.module('Samson.DataGrid')
                     if ('noResultsTemplate' in iAttr) {
                         $scope.noResultsTemplate = iAttr['noResultsTemplate'];
                     }
+                    if ('resultsTemplate' in iAttr) {
+                        $scope.resultsTemplate = iAttr['resultsTemplate'];
+                    }
                     if ('filterColumns' in iAttr) {
                         $scope.filterColumns = iAttr.filterColumns.split(',');
                     }
@@ -123,6 +126,8 @@ angular.module('Samson.DataGrid')
                 $templateCache.put('datagrid-no-form.html', '<tr><td>You need to define a form template!</td></tr>');
                 $scope.noResultsTemplate = 'datagrid-no-results.html';
                 $templateCache.put('datagrid-no-results.html', '<td colspan="{{ columnCount }}">No results</td>');
+                $scope.resultsTemplate = 'datagrid-results.html';
+                $templateCache.put('datagrid-results.html', '<p class="table-info">{{ resultData }}</p>');
                 $scope.driver = 'clientside';
                 $scope.filterTemplate = '/bundles/samsondatagrid/views/filter.html';
                 $scope.colgroupTemplate = null;

@@ -34,7 +34,9 @@ abstract class AbstractDataGridController extends Controller
         try {
             $this->getHelper()->update($entity, $this->getHelperConfiguration()->getFormType(), json_decode($this->getRequest()->getContent(), true), $options['form_options']);
         } catch (ValidationException $e) {
-            return new Response($this->get('jms_serializer')->serialize($e->getForm(), 'json'), 400);
+            $result = new Response($this->get('jms_serializer')->serialize($e->getForm(), 'json'), 400);
+            $result->headers->add(array('Content-Type' => 'application/json'));
+            return $result;
         }
 
         $em->persist($entity);

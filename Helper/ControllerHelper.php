@@ -11,21 +11,28 @@ use Symfony\Component\Form\FormFactoryInterface;
 class ControllerHelper
 {
     private $formFactory;
-
+    private $viewFactory;
     private $em;
 
     private $formOptions;
 
-    public function __construct(FormFactoryInterface $formFactory, EntityManager $em)
+    /**
+     * @param FormFactoryInterface $formFactory factory for creating the form
+     * @param FormFactoryInterface $viewFactory factory for creating the view
+     * @param EntityManager $em
+     */
+    public function __construct(FormFactoryInterface $formFactory, FormFactoryInterface $viewFactory, EntityManager $em)
     {
         $this->formFactory = $formFactory;
+        $this->viewFactory = $viewFactory;
         $this->em = $em;
     }
 
-    public function index(AbstractDataView $view, array $entities)
+    public function index($viewType, array $entities)
     {
-        $data = array_map(function ($entity) use ($view) {
-            $view->serialize($entity);
+        $viewFactory = $this->viewFactory;
+        $data = array_map(function ($entity) use ($viewType, $viewFactory) {
+            $view = $viewFactory->create($viewType, $entity)->createView();
             return $view->getData();
         }, $entities);
 

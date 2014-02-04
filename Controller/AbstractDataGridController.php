@@ -2,6 +2,7 @@
 
 namespace Samson\Bundle\DataGridBundle\Controller;
 
+use Samson\Bundle\DataGridBundle\Helper\ControllerHelperConfiguration;
 use Samson\Bundle\DataGridBundle\Helper\Exception\ValidationException;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
@@ -22,7 +23,7 @@ abstract class AbstractDataGridController extends Controller
 
     protected function getList($entities)
     {
-        return $this->getHelper()->index($this->getHelperConfiguration()->getView(), $entities);
+        return $this->getHelper()->index($this->getHelperConfiguration()->getViewType(), $entities);
     }
 
     protected function handleEdit($entity)
@@ -41,13 +42,11 @@ abstract class AbstractDataGridController extends Controller
 
         $em->persist($entity);
         $em->flush();
-        $view = $this->getHelperConfiguration()->getView();
-        $view->serialize($entity);
-
+        $view = $this->get('samson.dataview.factory')->create($this->getHelperConfiguration()->getViewType(), $entity)->createView();
         return new Response($this->get('jms_serializer')->serialize($view->getData(), 'json'));
     }
 
-    protected function handleCreate($entity)
+    protected function handleCreate()
     {
         $em = $this->getDoctrine()->getManager();
         return call_user_func_array(array($this, 'handleEdit'), func_get_args());

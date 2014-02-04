@@ -8,14 +8,14 @@ use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 class ControllerHelperConfiguration
 {
-    private $view;
+    private $viewType;
     private $formType;
     private $options;
 
-    public function __construct(AbstractDataView $view, $formType, array $options = array())
+    public function __construct($viewType, $formType, array $options = array())
     {
         $this->formType = $formType;
-        $this->view = $view;
+        $this->viewType = $viewType;
 
         $resolver = new OptionsResolver();
         $this->setDefaultOptions($resolver);
@@ -27,9 +27,9 @@ class ControllerHelperConfiguration
         return $this->formType;
     }
 
-    public function getView()
+    public function getViewType()
     {
-        return $this->view;
+        return $this->viewType;
     }
 
     public function getOptions()

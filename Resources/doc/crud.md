@@ -8,7 +8,7 @@ to use to generate the links:
 ``` html
 <datagrid
     [...]
-    routes="create: 'entity_create', update: 'entity_update', delete: 'entity_delete'"
+    routes="create: 'entity_create', edit: 'entity_update', delete: 'entity_delete'"
 ></datagrid>
 ```
 
@@ -45,7 +45,7 @@ the desired behaviour. To change the mapping, add the following to your element:
 ``` html
 <datagrid
     [...]
-    routes="create: 'entity_create', update: 'entity_update', delete: 'entity_delete'"
+    routes="create: 'entity_create', edit: 'entity_update', delete: 'entity_delete'"
     id-map="{ entity: 'row.id', slug: 'row.slug' }"
 ></datagrid>
 ```
@@ -59,7 +59,7 @@ have a table showing all the articles in a specific category and this category n
 ``` html
 <datagrid
     [...]
-    routes="create: 'entity_create', update: 'entity_update', delete: 'entity_delete'"
+    routes="create: 'entity_create', edit: 'entity_update', delete: 'entity_delete'"
     route-parameters="{ category_id: {{ category.id }} }"
 ></datagrid>
 ```

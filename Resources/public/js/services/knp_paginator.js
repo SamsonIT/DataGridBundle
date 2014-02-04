@@ -142,6 +142,33 @@ drivers['knp-paginator'] = function($http, $q, $location, $timeout) {
             }, 200);
 
             return deferred.promise;
+        },
+        /**
+         * For updating the current view, we re-set the page to this.getPage() to trigger a refresh.
+         * @param row
+         */
+        update: function() {
+            this.setPage(this.getPage());
+        },
+        /**
+         * After adding a row, refresh the dataset for the page from server.
+         * Note that our freshly added row could disappear after a re fresh, but that's due to sorting / pagination..
+         * @param row
+         * @param transformFn
+         */
+        addRow: function(row, transformFn) {
+            row = transformFn(row);
+            data.items.push(row);
+            this.update();
+            return row;
+        },
+        /**
+         * Remove the deleted row from the current view and then fire an update data request to fetch the new view data.
+         * @param row
+         */
+        deleteRow: function(row) {
+           data.items.splice(data.items.indexOf(row), 1);
+           this.update();
         }
     }
 }

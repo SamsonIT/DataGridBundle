@@ -99,7 +99,7 @@ angular.module('Samson.DataGrid')
                                 loadingEl = null;
                             })
                         } else if (val && !loadingEl) {
-                            loadingEl = $("<div>").appendTo('body').css({ position: 'absolute', backgroundColor: 'white' }).position({ my: 'left top', at: 'left top', of: iElement.find('.table') })
+                            loadingEl = $("<div>").appendTo('body').css({ position: 'absolute', backgroundColor: 'white', zIndex: 10000 }).position({ my: 'left top', at: 'left top', of: iElement.find('.table') })
                                 .width(iElement.find('.table').width()).height(iElement.find('.table').height())
                                 .fadeTo(0, 0).fadeTo(500, .85);
                         }

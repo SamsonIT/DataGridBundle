@@ -249,3 +249,8 @@ It's possible to add your own filter-template. Add a filter-template attribute t
 </div>
 </script>
 ```
+
+## Adding click events to datagrid rows
+
+Use the datagridRowClick directive to add click events to a row. This directive will make sure that if a link or button
+was clicked on that same row, the method will not be called.

@@ -352,6 +352,27 @@ angular.module('Samson.DataGrid')
             }
         };
         return directiveDefinitionObject;
+    }).directive('datagridRowClick', function($parse) {
+        return {
+            restrict: 'A',
+            require: '^datagridRow',
+            compile: function($element, $attr) {
+                var fn = $parse($attr['datagridRowClick']);
+                return function($scope, $element, $attr) {
+                    $element.on('click', function(event) {
+                        var elementsBetweenTargetAndHandler = $(event.target).parentsUntil($element).add($element);
+
+                        if (elementsBetweenTargetAndHandler.filter('a, :input, [ng-click]').length) {
+                            return;
+                        }
+
+                        $scope.$apply(function() {
+                            fn($scope, { $event: event });
+                        })
+                    })
+                };
+            }
+        }
     }).directive('datagridRow', function($compile, $templateCache, $http) {
         return {
             restrict: 'A',

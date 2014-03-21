@@ -21,9 +21,13 @@
         "samson/dataview-bundle": "useful for serializing data for the datagrid"
     },
     "autoload": {
-        "psr-0": {
-            "Samson\\Bundle\\DataGridBundle": ""
+        "psr-4": {
+            "Samson\\Bundle\\DataGridBundle\\": ""
         }
     },
-    "target-dir": "Samson/Bundle/DataGridBundle"
+    "extra": {
+        "branch-alias": {
+            "dev-master": "2.0.x-dev"
+        }
+    }
 }

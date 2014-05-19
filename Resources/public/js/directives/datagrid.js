@@ -112,6 +112,8 @@ angular.module('Samson.DataGrid')
                 $scope.editing = [];
                 $scope.newRows = [];
                 $scope.filter = {};
+                $scope.pagination = {};
+                $scope.pagination.currentPage;
 
                 this.getDataService = function() {
                     return $scope.dataService;
@@ -194,7 +196,13 @@ angular.module('Samson.DataGrid')
                     var properties = ['visibleRows', 'firstResult', 'lastResult', 'totalResults', 'filteredResults', 'page', 'pages', 'sort'];
                     for (var i in properties) {
                         var property = properties[i];
-                        $scope[property] = callDriver('get'+ property.charAt(0).toUpperCase() + property.slice(1));
+                        var res = callDriver('get'+ property.charAt(0).toUpperCase() + property.slice(1));
+                        // always use a dot for model-data.
+                        if(property === 'page'){
+                            $scope.pagination.currentPage = res;
+                        } else {
+                            $scope[property] = res;
+                        }
                     }
 
                     $scope.$broadcast('data.updated', callDriver('getVisibleRows'));

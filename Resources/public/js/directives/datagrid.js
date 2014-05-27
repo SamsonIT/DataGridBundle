@@ -554,7 +554,11 @@ angular.module('Samson.DataGrid')
 
                 var action = function() {
                     if (iElement.prop('tagName') == 'A' && !iAttr['dataDialog']) {
-                        window.location.href = iAttr.href;
+                        if (e.which == 2 || e.ctrlKey) {
+                            $window.open(iAttr.href);
+                        } else {
+                            $window.location.href = iAttr.href;
+                        }
                     } else {
                         iElement.trigger('click');
                     }

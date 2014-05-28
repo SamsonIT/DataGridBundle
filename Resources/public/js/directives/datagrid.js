@@ -552,7 +552,7 @@ angular.module('Samson.DataGrid')
             link: function($scope, iElement, iAttr) {
                 var $row = iElement.closest('tr');
 
-                var action = function() {
+                var action = function(e) {
                     if (iElement.prop('tagName') == 'A' && !iAttr['dataDialog']) {
                         if (e.which == 2 || e.ctrlKey) {
                             $window.open(iAttr.href);
@@ -568,7 +568,7 @@ angular.module('Samson.DataGrid')
                     .css('cursor', 'pointer')
                     .on('click', function(e) {
                         if (!$(e.target).is('a') && !($(e.target).closest('a, input').length)) {
-                            action();
+                            action(e);
                             e.preventDefault();
                         }
                     })

@@ -1,7 +1,7 @@
 angular.module('Samson.DataGrid')
-    .directive('datagrid', function($locale) {
+    .directive('datagrid', function ($locale) {
 
-        switch($locale.id) {
+        switch ($locale.id) {
             case 'nl-nl':
                 var resultDataText = "{{ firstResult }} t/m {{ lastResult }} van {{ filteredResults }} resultaten getoond (totaal: {{ totalResults }})";
                 break;
@@ -16,12 +16,12 @@ angular.module('Samson.DataGrid')
             scope: true,
             templateUrl: '/bundles/samsondatagrid/views/datagrid.html',
             replace: true,
-            compile: function(tElement, tAttr) {
+            compile: function (tElement, tAttr) {
                 if ('ngRowController' in tAttr) {
                     tElement.find('tbody[ng-repeat]').attr('ng-controller', tAttr.ngRowController);
                 }
 
-                return function($scope, iElement, iAttr) {
+                return function ($scope, iElement, iAttr) {
                     var data = null;
 
                     if ('headerTemplate' in iAttr) {
@@ -45,7 +45,7 @@ angular.module('Samson.DataGrid')
                     if ($scope.data) {
                         data = $scope.data;
                     } else if ('data' in iAttr) {
-                       data = angular.fromJson(iAttr['data']);
+                        data = angular.fromJson(iAttr['data']);
                     }
                     if ('service' in iAttr) {
                         $scope.dataService = iAttr.service;
@@ -53,53 +53,55 @@ angular.module('Samson.DataGrid')
                     if ('ngRowController' in iAttr) {
                         $scope.rowController = iAttr.ngRowController;
                     }
-                    if ('filterTemplate' in iAttr){
+                    if ('filterTemplate' in iAttr) {
                         $scope.filterTemplate = iAttr.filterTemplate;
                     }
-                    if ('colgroupTemplate' in iAttr){
+                    if ('colgroupTemplate' in iAttr) {
                         $scope.colgroupTemplate = iAttr.colgroupTemplate;
                     }
                     $scope.driver = $scope.instantiateDriver('driver' in iAttr ? iAttr['driver'] : 'clientside');
 
-                    if(iAttr.routes) {
-                        $scope.routes = $scope.$eval('{'+iAttr.routes+'}');
+                    if (iAttr.routes) {
+                        $scope.routes = $scope.$eval('{' + iAttr.routes + '}');
                     }
                     $scope.routeParams = {};
                     if (iAttr.routeParams) {
                         $scope.routeParams = $scope.$eval(iAttr.routeParams);
                     }
-                    $scope.idMap = { id: 'row.id' };
+                    $scope.idMap = {id: 'row.id'};
                     if (iAttr.idMap) {
                         $scope.idMap = $scope.$eval(iAttr.idMap);
                     }
 
-                    setTimeout(function() {
+                    setTimeout(function () {
                         $scope.$apply(
-                            function() {
+                            function () {
                                 var $headerCells = iElement.find('thead:eq(0) tr:eq(0)').find('th, td');
                                 var count = 0;
-                                $headerCells.each(function() {
+                                $headerCells.each(function () {
                                     count += parseInt($(this).attr('colspan')) || 1;
                                 });
 
                                 $scope.columnCount = count;
                             }
-
                         );
                     });
 
                     var loadingEl = null;
-                    $scope.$watch('loading', function(val) {
+                    $scope.$watch('loading', function (val) {
                         if (!val && loadingEl) {
-                            setTimeout(function() {
+                            setTimeout(function () {
                                 loadingEl.width(iElement.find('.table').width()).height(iElement.find('.table').height());
                             }, 0);
-                            loadingEl.fadeTo(500, 0, function() {
+                            loadingEl.fadeTo(500, 0, function () {
                                 loadingEl.remove();
                                 loadingEl = null;
                             })
                         } else if (val && !loadingEl) {
-                            loadingEl = $("<div>").appendTo('body').css({ position: 'absolute', backgroundColor: 'white' }).position({ my: 'left top', at: 'left top', of: iElement.find('.table') })
+                            loadingEl = $("<div>").appendTo('body').css({
+                                position: 'absolute',
+                                backgroundColor: 'white'
+                            }).position({my: 'left top', at: 'left top', of: iElement.find('.table')})
                                 .width(iElement.find('.table').width()).height(iElement.find('.table').height())
                                 .fadeTo(0, 0).fadeTo(500, .85);
                         }
@@ -108,12 +110,12 @@ angular.module('Samson.DataGrid')
                     $scope.setData(data);
                 }
             },
-            controller: function($scope, $templateCache, $injector, $parse, $q, $timeout, $interpolate) {
+            controller: function ($scope, $templateCache, $injector, $parse, $q, $timeout, $interpolate) {
                 $scope.editing = [];
                 $scope.newRows = [];
                 $scope.filter = {};
 
-                this.getDataService = function() {
+                this.getDataService = function () {
                     return $scope.dataService;
                 }
 
@@ -134,26 +136,26 @@ angular.module('Samson.DataGrid')
 
                 $scope.visibleRows = [];
 
-                $scope.$watch('filterColumns', function(newValue) {
+                $scope.$watch('filterColumns', function (newValue) {
                     callDriver('setFilterFields', newValue);
                 })
 
-                $scope.instantiateDriver = function(name) {
+                $scope.instantiateDriver = function (name) {
                     return $injector.instantiate(drivers[name]);
                 }
 
-                var getDriver = function() {
+                var getDriver = function () {
                     return $scope.driver;
                 }
-                var callDriver = function(method) {
+                var callDriver = function (method) {
                     driver = getDriver();
                     if (!(method in driver)) {
-                        throw Error('The driver has no method '+method);
+                        throw Error('The driver has no method ' + method);
                     }
                     return driver[method].apply(driver, Array.prototype.slice.call(arguments, 1));
                 }
 
-                this.transform = function(data) {
+                this.transform = function (data) {
                     if (!$scope.dataService) {
                         return data;
                     }
@@ -163,15 +165,15 @@ angular.module('Samson.DataGrid')
                     return 'transformResponse' in service ? service.transformResponse(data) : data;
                 }
 
-                this.addRow = function(data) {
+                this.addRow = function (data) {
                     callDriver('addRow', data, self.transform);
                     self.updateData();
                 }
-                this.refresh = function() {
+                this.refresh = function () {
                     $q.when(callDriver('setPage', $scope.page)).then(self.updateData);
                 }
 
-                $scope.setData = function(data) {
+                $scope.setData = function (data) {
                     if (null === data) {
                         service = $injector.get($scope.dataService);
                         service.datagridCtrl = self;
@@ -181,34 +183,34 @@ angular.module('Samson.DataGrid')
                     }
 
                     getDriver().loading = true;
-                    $q.when(data).then(function(data) {
+                    $q.when(data).then(function (data) {
                         callDriver('setData', data, self.transform);
                         getDriver().loading = false;
 
                         self.updateData();
-                    }, function(reason) {
-                        throw Error('Error while fetching data: '+reason);
+                    }, function (reason) {
+                        throw Error('Error while fetching data: ' + reason);
                     });
                 }
-                this.updateData = function() {
+                this.updateData = function () {
                     var properties = ['visibleRows', 'firstResult', 'lastResult', 'totalResults', 'filteredResults', 'page', 'pages', 'sort'];
                     for (var i in properties) {
                         var property = properties[i];
-                        $scope[property] = callDriver('get'+ property.charAt(0).toUpperCase() + property.slice(1));
+                        $scope[property] = callDriver('get' + property.charAt(0).toUpperCase() + property.slice(1));
                     }
 
                     $scope.$broadcast('data.updated', callDriver('getVisibleRows'));
                 }
 
-                $scope.setPage = function(page) {
-                    if( $scope.waiting ) {
+                $scope.setPage = function (page) {
+                    if ($scope.waiting) {
                         $timeout.cancel($scope.waiting);
                     }
-                    $scope.waiting = $timeout( function(){
+                    $scope.waiting = $timeout(function () {
                         var result = callDriver('setPage', page);
 
                         if (angular.isObject(result) && 'then' in result) {
-                            result.then(function() {
+                            result.then(function () {
                                 self.updateData();
                             });
 
@@ -216,15 +218,15 @@ angular.module('Samson.DataGrid')
                         }
 
                         self.updateData();
-                    },200)
+                    }, 200)
 
                 }
 
-                this.sort = function(sortField) {
+                this.sort = function (sortField) {
                     var result = callDriver('sort', sortField);
 
                     if (angular.isObject(result) && 'then' in result) {
-                        result.then(function() {
+                        result.then(function () {
                             self.updateData();
                         });
 
@@ -234,16 +236,16 @@ angular.module('Samson.DataGrid')
                     self.updateData();
                 }
 
-                $scope.isEditable = function(row) {
+                $scope.isEditable = function (row) {
                     return $scope.visibleRows.indexOf(row) > -1;
                 }
 
-                var generateParams = function(extraParams) {
+                var generateParams = function (extraParams) {
                     extraParams = typeof(extraParams) == 'undefined' ? {} : extraParams;
 
                     return angular.extend(extraParams, $scope.routeParams)
                 }
-                var generateIdParams = function(row, extraParams) {
+                var generateIdParams = function (row, extraParams) {
                     var params = {};
 
                     for (var i in $scope.idMap) {
@@ -255,25 +257,25 @@ angular.module('Samson.DataGrid')
                     return generateParams($.extend(extraParams, params));
                 }
 
-                $scope.createPath = function(extraParams) {
+                $scope.createPath = function (extraParams) {
                     extraParams = typeof(extraParams) == 'undefined' ? {} : extraParams;
                     return Routing.generate($scope.routes['create'], generateParams(extraParams));
                 }
-                $scope.viewPath = function(row, extraParams) {
+                $scope.viewPath = function (row, extraParams) {
                     return Routing.generate($scope.routes['view'], generateIdParams(row, extraParams));
                 }
-                $scope.editPath = function(row, extraParams) {
+                $scope.editPath = function (row, extraParams) {
                     return Routing.generate($scope.routes['edit'], generateIdParams(row, extraParams));
                 }
-                $scope.deletePath = function(row, extraParams) {
+                $scope.deletePath = function (row, extraParams) {
                     return Routing.generate($scope.routes['delete'], generateIdParams(row, extraParams));
                 }
 
-                $scope.getRowTemplate = function(row) {
+                $scope.getRowTemplate = function (row) {
                     return $scope.editing.indexOf(row) > -1 || $scope.newRows.indexOf(row) > -1 ? $scope.formTemplate : $scope.bodyTemplate;
                 }
 
-                $scope.edit = function(row) {
+                $scope.edit = function (row) {
                     row.$originalData = {};
                     for (var i in row) {
                         if (i == '$originalData') {
@@ -283,12 +285,12 @@ angular.module('Samson.DataGrid')
                     }
                     $scope.editing.push(row);
                 }
-                $scope.create = function() {
+                $scope.create = function () {
                     var row = self.transform({});
                     $scope.newRows.push(row);
                     return row;
                 }
-                $scope.cancel = function(row) {
+                $scope.cancel = function (row) {
                     var newRowsIndex = $scope.newRows.indexOf(row);
                     if (newRowsIndex > -1) {
                         $scope.newRows.splice(newRowsIndex, 1);
@@ -303,11 +305,11 @@ angular.module('Samson.DataGrid')
                     $scope.editing.splice($scope.editing.indexOf(row), 1);
                 }
 
-                $scope.$watch('filter.value', function(newValue) {
+                $scope.$watch('filter.value', function (newValue) {
                     var result = callDriver('filter', newValue);
 
                     if (angular.isObject(result) && 'then' in result) {
-                        result.then(function() {
+                        result.then(function () {
                             self.updateData();
                         });
 
@@ -315,9 +317,9 @@ angular.module('Samson.DataGrid')
                     }
 
                     self.updateData();
-                }, true );
+                }, true);
 
-                $scope.$on('row.updated', function(e, row) {
+                $scope.$on('row.updated', function (e, row) {
                     $scope.editing.splice($scope.editing.indexOf(row), 1);
                     var transformedRow = self.transform(row);
                     for (var i in transformedRow) {
@@ -326,7 +328,7 @@ angular.module('Samson.DataGrid')
                     self.updateData();
 //                    self.paginateToObject(row);
                 });
-                $scope.$on('row.created', function(e, row) {
+                $scope.$on('row.created', function (e, row) {
                     callDriver('addRow', row, self.transform);
                     callDriver('update');
                     $scope.newRows.splice($scope.editing.indexOf(row), 1);
@@ -334,80 +336,80 @@ angular.module('Samson.DataGrid')
 //                    self.paginateToObject(row);
                 })
 
-                $scope.$on('row.deleted', function(e, row) {
+                $scope.$on('row.deleted', function (e, row) {
                     callDriver('deleteRow', row);
                     $scope.editing.splice($scope.editing.indexOf(row), 1);
                     self.updateData();
                 })
 
-                $scope.$watch(function() {
+                $scope.$watch(function () {
                     return getDriver().loading;
-                }, function(val) {
+                }, function (val) {
                     $scope.loading = val;
                 })
 
-                $scope.$watch('firstResult + lastResult + filteredResults + totalResults', function() {
+                $scope.$watch('firstResult + lastResult + filteredResults + totalResults', function () {
                     $scope.resultData = $interpolate(resultDataText)($scope);
                 });
             }
         };
         return directiveDefinitionObject;
-    }).directive('datagridRow', function($compile, $templateCache, $http) {
+    }).directive('datagridRow', function ($compile, $templateCache, $http) {
         return {
             restrict: 'A',
             require: '^datagrid',
-            link: function($scope, iElement, iAttr, datagridCtrl) {
+            link: function ($scope, iElement, iAttr, datagridCtrl) {
                 if (datagridCtrl.getDataService()) {
                     $scope.setDataService(datagridCtrl.getDataService());
                 }
 
-                $scope.$watch(function() {
+                $scope.$watch(function () {
                     return $scope.getRowTemplate($scope.row);
-                }, function(newTemplateId) {
-                    $http.get(newTemplateId, {cache: $templateCache}).success(function(template) {
+                }, function (newTemplateId) {
+                    $http.get(newTemplateId, {cache: $templateCache}).success(function (template) {
                         var $template = $(template);
-                        $template.find('input[name], textarea[name], select[name]').each(function() {
-                           $(this).attr('tooltip', '{{ errors["'+$(this).attr('name')+'"] }}').attr('tooltip-html', true);
+                        $template.find('input[name], textarea[name], select[name]').each(function () {
+                            $(this).attr('tooltip', '{{ errors["' + $(this).attr('name') + '"] }}').attr('tooltip-html', true);
                         });
 
-                        $compile($template)($scope, function(clonedElement) {
+                        $compile($template)($scope, function (clonedElement) {
                             iElement.empty().append(clonedElement);
                         });
                     });
                 });
 
             },
-            controller: function($scope, $http, $injector) {
+            controller: function ($scope, $http, $injector) {
                 $scope.hasErrors = false;
 
                 var dataService = {};
 
-                $scope.setDataService = function(dataservice) {
+                $scope.setDataService = function (dataservice) {
                     dataService = $injector.get($scope.dataService);
                 }
 
-                $scope.delete = function(row) {
+                $scope.delete = function (row) {
                     if (!confirm('Are you sure you wish to delete this row?')) {
                         return;
                     }
 
-                    $http.delete($scope.deletePath(row, { _format: 'json' }), row).success(function() {
+                    $http.delete($scope.deletePath(row, {_format: 'json'}), row).success(function () {
                         $scope.$emit('row.deleted', row);
-                    }).error( function() {
+                    }).error(function () {
                         $scope.$emit('row.deleting_failed', row);
                     })
                 }
 
-                $scope.save = function(row) {
+                $scope.save = function (row) {
                     var method;
                     var url;
 
                     if ($scope.isEditable(row)) {
                         method = 'put';
-                        url = $scope.editPath(row, { _format: 'json' });
+                        url = $scope.editPath(row, {_format: 'json'});
                     } else {
                         method = 'post';
-                        url = $scope.createPath({ _format: 'json' });
+                        url = $scope.createPath({_format: 'json'});
                     }
 
                     var options = {};
@@ -416,7 +418,7 @@ angular.module('Samson.DataGrid')
                         options.transformRequest = dataService.transformRequest;
                     }
 
-                    $http[method](url, row, options).success(function(data) {
+                    $http[method](url, row, options).success(function (data) {
                         $scope.$broadcast('errors.updated', {});
                         $scope.hasErrors = false;
 
@@ -433,13 +435,13 @@ angular.module('Samson.DataGrid')
                                 $scope.$emit('row.created', row);
                             }
                         }
-                    }).error(function(data) {
+                    }).error(function (data) {
 
                         if (angular.isObject(data)) {
                             data.errors = data.errors || [];
                             data.errors.unshift('The form has errors');
                         } else {
-                            data = { errors: 'An error occurred while saving' };
+                            data = {errors: 'An error occurred while saving'};
                         }
                         $scope.hasErrors = true;
                         $scope.$broadcast('errors.updated', data);
@@ -455,8 +457,8 @@ angular.module('Samson.DataGrid')
                             var fieldErrors = errors.read(i);
                             $scope.form[i].$setValidity('server', !fieldErrors.length);
                             $scope.errors[i] = "<ul>";
-                            fieldErrors.forEach(function(error) {
-                                $scope.errors[i] += "<li>"+error+"</li>";
+                            fieldErrors.forEach(function (error) {
+                                $scope.errors[i] += "<li>" + error + "</li>";
                             });
                             $scope.errors[i] += "</ul>";
                         }
@@ -464,13 +466,13 @@ angular.module('Samson.DataGrid')
                 }
             }
         }
-    }).directive('datagridErrors', function() {
+    }).directive('datagridErrors', function () {
         return {
             restrict: 'A',
             require: '^datagridRow',
             scope: true,
             template: '<div ng-repeat="error in errors">{{ error }}</div>',
-            link: function($scope, iElement, iAttr, datagrid) {
+            link: function ($scope, iElement, iAttr, datagrid) {
                 $scope.errors = [];
                 $scope.path;
 
@@ -484,30 +486,30 @@ angular.module('Samson.DataGrid')
                     $scope.path = 'errors';
                 }
             },
-            controller: function($scope, $parse) {
-                $scope.$on('errors.updated', function(e, data) {
+            controller: function ($scope, $parse) {
+                $scope.$on('errors.updated', function (e, data) {
                     $scope.errors = $parse($scope.path)(data);
                 })
             }
         }
-    }).directive('sortable', function() {
+    }).directive('sortable', function () {
         return {
             restrict: 'A',
             require: '^datagrid',
-            link: function($scope, iElement, iAttr, datagrid) {
+            link: function ($scope, iElement, iAttr, datagrid) {
                 var name = iAttr.sortable || iAttr.text().toLowerCase();
-                iElement.click(function() {
-                    $scope.$apply(function() {
+                iElement.click(function () {
+                    $scope.$apply(function () {
                         datagrid.sort(name);
                     })
                 });
 
-                $scope.$watch('sort', function(newValue) {
+                $scope.$watch('sort', function (newValue) {
                     if (typeof(newValue) != 'undefined') {
                         iElement.removeClass('sorting sorting-asc sorting-desc');
 
                         if (name == newValue[0]) {
-                            iElement.addClass('sorting-'+newValue[1]);
+                            iElement.addClass('sorting-' + newValue[1]);
                         } else {
                             iElement.addClass('sorting');
                         }
@@ -517,18 +519,18 @@ angular.module('Samson.DataGrid')
                 });
             }
         }
-    }).directive('rowClick', function() {
+    }).directive('rowClick', function () {
         return {
             restrict: 'A',
-            link: function($scope, iElement, iAttr) {
+            link: function ($scope, iElement, iAttr) {
                 var $row = iElement.closest('tr');
 
-                var action = function() {
+                var action = function (e) {
                     if (iElement.prop('tagName') == 'A' && !iAttr['dataDialog']) {
                         if (e.which == 2 || e.ctrlKey) {
-                            $window.open(iAttr.href);
+                            window.open(iAttr.href);
                         } else {
-                            $window.location.href = iAttr.href;
+                            window.location.href = iAttr.href;
                         }
                     } else {
                         iElement.trigger('click');
@@ -537,16 +539,16 @@ angular.module('Samson.DataGrid')
 
                 $row
                     .css('cursor', 'pointer')
-                    .on('click', function(e) {
+                    .on('click', function (e) {
                         if (!$(e.target).is('a') && !($(e.target).closest('a, input').length)) {
-                            action();
+                            action(e);
                             e.preventDefault();
                         }
                     })
                 ;
             }
         }
-    }).directive('datagridFilterbox', function(){
+    }).directive('datagridFilterbox', function () {
         return {
             restrict: 'E',
             replace: true,

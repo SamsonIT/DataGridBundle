@@ -59,6 +59,10 @@ angular.module('Samson.DataGrid')
                     if ('colgroupTemplate' in iAttr){
                         $scope.colgroupTemplate = iAttr.colgroupTemplate;
                     }
+                    if ('paginationTemplate' in iAttr) {
+                        $scope.paginationTemplate = iAttr.paginationTemplate;
+                    }
+
                     $scope.driver = $scope.instantiateDriver('driver' in iAttr ? iAttr['driver'] : 'clientside');
 
                     if(iAttr.routes) {
@@ -132,6 +136,7 @@ angular.module('Samson.DataGrid')
                 $templateCache.put('datagrid-results.html', '<p class="table-info">{{ resultData }}</p>');
                 $scope.driver = 'clientside';
                 $scope.filterTemplate = '/bundles/samsondatagrid/views/filter.html';
+                $scope.paginationTemplate = '/bundles/samsondatagrid/views/pagination.html';
                 $scope.colgroupTemplate = null;
 
                 $scope.visibleRows = [];

@@ -16,18 +16,6 @@
 
     <div class="results" ng-include="resultsTemplate"></div>
 
-    <div class="pagination" ng-if="pages.length != 1">
-        <span>
-            <span ng-switch on="pagination.currentPage > 1">
-                <a ng-switch-when="true" ng-click="setPage(pagination.currentPage-1)"><span class="inline-icon-mp">&lt;</span></a>
-                <span ng-switch-when="false" class="inline-icon-mp">&lt;</span>
-            </span>
-            <input ng-if="pages.length" ng-model="pagination.currentPage" style="width: 2em; text-align: right;" ng-change="setPage(pagination.currentPage)"><span ng-if="!pages.length">0</span> / {{ pages.length }}
-            <span ng-switch on="pagination.currentPage < pages.length">
-                <a ng-switch-when="true" ng-click="setPage(pagination.currentPage+1)"><span class="inline-icon-mp">&gt;</span></a>
-                <span ng-switch-when="false" class="inline-icon-mp">&gt;</span>
-            </span>
-        </span>
-    </div>
+    <ng-include src="paginationTemplate"/>
 
 </div>

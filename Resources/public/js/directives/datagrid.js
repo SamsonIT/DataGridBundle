@@ -551,7 +551,7 @@ angular.module('Samson.DataGrid')
                 });
             }
         }
-    }).directive('rowClick', function() {
+    }).directive('rowClick', function($window) {
         return {
             restrict: 'A',
             link: function($scope, iElement, iAttr) {

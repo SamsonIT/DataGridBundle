@@ -169,7 +169,7 @@ angular.module('Samson.DataGrid')
                     $scope.setData(data);
                 }
             },
-            controller: function ($scope, $templateCache, $injector, $parse, $q, $timeout, $interpolate) {
+            controller: function ($scope, $rootScope, $templateCache, $injector, $parse, $q, $timeout, $interpolate) {
                 $scope.editing = [];
                 $scope.newRows = [];
                 $scope.filter = {};
@@ -178,7 +178,7 @@ angular.module('Samson.DataGrid')
 
                 this.getDataService = function () {
                     return $scope.dataService;
-                }
+                };
 
                 var self = this;
                 $scope.headerTemplate = 'datagrid-no-header.html';
@@ -312,6 +312,10 @@ angular.module('Samson.DataGrid')
                     $scope.$broadcast('data.updated', callDriver('getVisibleRows'));
                 };
 
+                /**
+                 *
+                 * @param page
+                 */
                 $scope.setPage = function (page) {
                     if ($scope.waiting) {
                         $timeout.cancel($scope.waiting);
@@ -480,6 +484,11 @@ angular.module('Samson.DataGrid')
                     return getDriver().loading;
                 }, function (val) {
                     $scope.loading = val;
+                });
+
+                $rootScope.$on('datagrid.refresh', function() {
+                    console.log("Fetch new data! after datagrid.refresh!");
+                    self.refresh();
                 });
 
                 $scope.$watch('firstResult + lastResult + filteredResults + totalResults', function () {

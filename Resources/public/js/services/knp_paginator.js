@@ -244,6 +244,21 @@ drivers['knp-paginator'] = function ($http, $q, $location, $timeout) {
              * @returns {Promise}
              */
             filter: function (newFilter) {
+                if (typeof(newFilter) == 'undefined') {
+                    newFilter = '';
+                }
+                if (newFilter == filter) {
+                    return;
+                }
+                filter = newFilter;
+
+                if (filterTimeout) {
+                    $timeout.cancel(filterTimeout);
+                }
+
+                var pageParams = getRouteParams({});
+                    pageParams[data.paginator_options.filterFieldParameterName] = filterFields;
+                    pageParams[data.paginator_options.filterValueParameterName] = filter;
                 return service.fetchPagedData();
             },
             /**

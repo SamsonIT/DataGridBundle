@@ -3,7 +3,6 @@ var drivers = drivers || {};
 drivers['knp-paginator'] = function ($http, $q, $location, $timeout) {
     var data = [],
         filter = '',
-        filterTimeout,
         filterFields,
         $cancelRequest = null,
 
@@ -26,14 +25,24 @@ drivers['knp-paginator'] = function ($http, $q, $location, $timeout) {
          */
         getRouteParams = function (params) {
             var defaults = {};
-            if (!angular.isArray(data.params)) {
+            if (angular.isObject(data.params)) {
                 angular.copy(data.params, defaults);
             }
             params = angular.extend(defaults, params);
 
-            if (data.paginator_options && (!(data.paginator_options.filterValueParameterName in params) || !params[data.paginator_options.filterValueParameterName].length)) {
+            var isQuickFilterHidden = document.querySelector('.quick-filter').style.display === "none";
+            if (isQuickFilterHidden) {
                 delete params[data.paginator_options.filterFieldParameterName];
                 delete params[data.paginator_options.filterValueParameterName];
+            } else {
+                var out = {};
+                out[data.paginator_options.filterFieldParameterName] = params[data.paginator_options.filterFieldParameterName];
+                out[data.paginator_options.filterValueParameterName] =  params[data.paginator_options.filterValueParameterName];
+                return out;
+            }
+
+            if(('length' in params)) {
+                delete params.length;
             }
             return params;
         },
@@ -47,28 +56,33 @@ drivers['knp-paginator'] = function ($http, $q, $location, $timeout) {
          */
         generateRoute = function (routeName, params) {
             var params = angular.copy(params);
-            params._format = 'json';
+            //params._format = 'json';
             return Routing.generate(routeName, params);
         },
 
         /**
-         * Check if there is a form with class .form-contents and input's with name filter[*
-         * Return a hashmap of the values of those when the form doesn't have the class .filter-hidden
+         * Check if the quickfilter field is not shown, then grab all the filter field values.
+         * Return a hashmap of the values
          * @returns false || object
          */
         getSearchParams = function () {
-            var params = document.querySelectorAll(".form-contents:not(.filter-hidden) [name^='filter[']");
-            if(params.length > 0) {
-                var filters = {};
-                Array.prototype.map.call(params, function (param) {
-                    if (param.name.indexOf('[reset]') > -1) {
-                        return;
-                    }
-                    filters[param.name] = param.value;
-                });
-                return filters;
+            var isQuickFilterHidden = document.querySelector('.quick-filter').style.display === "none";
+
+            if(isQuickFilterHidden) { // kill the existing filter fields when the expanded fields are shown.
+                var params = document.querySelectorAll(".form-contents:not(.filter-hidden) [name^='filter[']");
+                if (params.length > 0) {
+                    var filters = {};
+                    Array.prototype.map.call(params, function (param) {
+                        if (param.name.indexOf('[reset]') > -1) {
+                            return;
+                        }
+                        filters[param.name] = param.value;
+                    });
+                    return filters;
+                }
+            } else {
+                return false;
             }
-            return false;
         },
 
         service = {
@@ -156,7 +170,7 @@ drivers['knp-paginator'] = function ($http, $q, $location, $timeout) {
              * @returns array with 2 items: [sortfield, sortdirection]
              */
             getSort: function (col) {
-                return 'params' in data && (data.paginator_options.sortFieldParameterName in data.params) && (data.paginator_options.sortDirectionParameterName in data.params) ? [data.params[data.paginator_options.sortFieldParameterName], data.params[data.paginator_options.sortDirectionParameterName]] : [];
+                return 'params' in data && (data.paginator_options.sortFieldParameterName in data.params) && (data.paginator_options.sortDirectionParameterName in data.params) ? [data.params[data.paginator_options.sortFieldParameterName], data.params[data.paginator_options.sortDirectionParameterName]] : {};
             },
 
             /**
@@ -175,15 +189,20 @@ drivers['knp-paginator'] = function ($http, $q, $location, $timeout) {
                     parameters = {};
                 }
 
-                /// toodo finish this:. default should be sensible.
-                if(('sortFieldParameterName' in data.paginator_options) && (data.paginator_options.sortFieldParameterName in data.params)) {
-                    parameters[data.paginator_options.sortFieldParameterName] = data.params[data.paginator_options.sortFieldParameterName];
+                // grab the sort parameter field from the defaults. If we have none, use null.
+                var sortFieldParam = (('sortFieldParameterName' in data.paginator_options)) ? parameters[data.paginator_options.sortFieldParameterName] : null;
+                // grab the sort direction value field from the defaults. If we have none, use null.
+                var sortDirParam = (('sortDirectionParameterName' in data.paginator_options)) ? parameters[data.paginator_options.sortDirectionParameterName] : null;
+
+                if(sortFieldParam) { // the server told us how to use the sort. Set the default or passed value.
+                    var defaultSortFieldName = (('defaultSortFieldName' in data.paginator_options)) ? parameters[data.paginator_options.defaultSortFieldName] : null;
+                    var defaultSortDirValue = (('defaultSortDirection' in data.paginator_options)) ? parameters[data.paginator_options.defaultSortDirection] : null;
+                    // now populate the parameters array with either the mapped value or the default.
+                    parameters[sortFieldParam] = ((sortFieldParam in parameters) && !parameters.hasOwnProperty(sortFieldParam)) ? parameters[sortFieldParam] : defaultSortFieldName;
+                    parameters[sortDirParam] = ((sortDirParam in parameters) && !parameters.hasOwnProperty(sortDirParam)) ? parameters[sortDirParam] : defaultSortDirValue;
                 }
-                if('defaultSortFieldDirection' in data.paginator_options && (data.paginator_options.sortFieldParameterName in data.params)) {
-                    parameters[data.paginator_options.defaultSortFieldDirection] = data.params[data.paginator_options.defaultSortFieldDirection];
-                }
-                parameters[data.paginator_options.sortDirectionParameterName] = data.params.direction || 'asc';
-                parameters[data.paginator_options.pageParameterName] = parameters.page || 1;
+
+                parameters[data.paginator_options.pageParameterName] = parameters[data.paginator_options.pageParameterName] || 1;
 
                 abortActiveRequest(); // abort $cancelRequest if running and create a new $cancelRequest.
 
@@ -223,7 +242,7 @@ drivers['knp-paginator'] = function ($http, $q, $location, $timeout) {
              * @returns Promise to fetch new data
              */
             setPage: function (page) {
-                if (page < 1) {
+                if (isNaN(parseInt(page,10)) || parseInt(page,10) < 1) {
                     page = 1;
                 }
                 page = Math.min(Math.max(1, page), this.getPages().length);
@@ -257,14 +276,28 @@ drivers['knp-paginator'] = function ($http, $q, $location, $timeout) {
                 }
                 filter = newFilter;
 
-                if (filterTimeout) {
-                    $timeout.cancel(filterTimeout);
-                }
+                abortActiveRequest();
 
-                var pageParams = getRouteParams({});
+                var pageParams = getRouteParams({ _type: 'json' });
                     pageParams[data.paginator_options.filterFieldParameterName] = filterFields;
                     pageParams[data.paginator_options.filterValueParameterName] = filter;
-                return service.fetchPagedData();
+
+                return $http({
+                    method: 'GET',
+                    url: generateRoute(data.route, pageParams),
+                    timeout: $cancelRequest.promise,
+                    transformRequest: function(obj, a, b) {
+                        var str = [];
+                        for(var p in obj) {
+                            str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
+                        }
+                        return str.join("&");
+                    }
+                }).success(function (newData) {
+                    service.loading = false;
+                    service.setData(newData, data.transformFn);
+                    return newData;
+                });
             },
             /**
              * For updating the current view, we re-set the page to this.getPage() to trigger a refresh.

@@ -199,7 +199,9 @@ angular.module('Samson.DataGrid')
                 $scope.visibleRows = [];
 
                 $scope.$watch('filterColumns', function (newValue) {
-                    callDriver('setFilterFields', newValue);
+                    callDriver('setFilterFields', newValue.map(function(el) {
+                        return el.trim();
+                    }));
                 });
 
                 /**
@@ -770,5 +772,4 @@ angular.module('Samson.DataGrid')
             replace: true,
             template: '<input type="text" ng-model="filter.value" ng-list="/\\s+/" autocapitalize="off">'
         }
-    })
-;
+    });

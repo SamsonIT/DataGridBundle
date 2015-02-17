@@ -156,7 +156,7 @@ angular.module('Samson.DataGrid')
                                 loadingEl = null;
                             })
                         } else if (val && !loadingEl) {
-                            loadingEl = $("<div>").appendTo('body').css({
+                            loadingEl = $("<div class='datagrid-loader'>").appendTo('body').css({
                                 position: 'absolute',
                                 backgroundColor: 'white',
                                 zIndex: 10000

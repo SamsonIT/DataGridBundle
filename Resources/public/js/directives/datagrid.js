@@ -566,7 +566,8 @@ angular.module('Samson.DataGrid')
 
                     $http.delete($scope.deletePath(row, {_format: 'json'}), row).success(function () {
                         $scope.$emit('row.deleted', row);
-                    }).error(function () {
+                    }).error(function (message) {
+                        alert(message);
                         $scope.$emit('row.deleting_failed', row);
                     })
                 };

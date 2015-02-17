@@ -156,8 +156,7 @@ drivers['knp-paginator'] = function ($http, $q, $location, $timeout) {
              * @returns array with 2 items: [sortfield, sortdirection]
              */
             getSort: function (col) {
-
-                return 'params' in data ? [data.params.sort, data.params.direction] : [];
+                return 'params' in data && (data.paginator_options.sortFieldParameterName in data.params) && (data.paginator_options.sortDirectionParameterName in data.params) ? [data.params[data.paginator_options.sortFieldParameterName], data.params[data.paginator_options.sortDirectionParameterName]] : [];
             },
 
             /**
@@ -176,8 +175,14 @@ drivers['knp-paginator'] = function ($http, $q, $location, $timeout) {
                     parameters = {};
                 }
 
-                parameters[data.paginator_options.sortFieldParameterName] = typeof(data.params.sort) === "function" ? data.paginator_options.defaultSortFieldName : data.params.sort;
-                parameters[data.paginator_options.sortDirectionParameterName] = data.params.direction || data.paginator_options.defaultSortFieldDirection;
+                /// toodo finish this:. default should be sensible.
+                if(('sortFieldParameterName' in data.paginator_options) && (data.paginator_options.sortFieldParameterName in data.params)) {
+                    parameters[data.paginator_options.sortFieldParameterName] = data.params[data.paginator_options.sortFieldParameterName];
+                }
+                if('defaultSortFieldDirection' in data.paginator_options && (data.paginator_options.sortFieldParameterName in data.params)) {
+                    parameters[data.paginator_options.defaultSortFieldDirection] = data.params[data.paginator_options.defaultSortFieldDirection];
+                }
+                parameters[data.paginator_options.sortDirectionParameterName] = data.params.direction || 'asc';
                 parameters[data.paginator_options.pageParameterName] = parameters.page || 1;
 
                 abortActiveRequest(); // abort $cancelRequest if running and create a new $cancelRequest.

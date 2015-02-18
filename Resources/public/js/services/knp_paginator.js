@@ -31,8 +31,6 @@ drivers['knp-paginator'] = function ($http, $q, $location, $timeout) {
             }
             params = angular.extend(defaults, params);
 
-            var isQuickFilterHidden = document.querySelector('.quick-filter').style.display === "none";
-
             return params;
         },
 
@@ -55,7 +53,7 @@ drivers['knp-paginator'] = function ($http, $q, $location, $timeout) {
          * @returns false || object
          */
         getSearchParams = function () {
-            var isQuickFilterHidden = document.querySelector('.quick-filter').style.display === "none";
+            var isQuickFilterHidden = !document.querySelector('.quick-filter') || document.querySelector('.quick-filter').style.display === "none";
 
             if(isQuickFilterHidden) { // kill the existing filter fields when the expanded fields are shown.
                 var params = document.querySelectorAll(".form-contents:not(.filter-hidden) [name^='filter[']");

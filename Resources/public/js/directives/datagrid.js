@@ -354,7 +354,7 @@ angular.module('Samson.DataGrid')
                 });
 
                 $scope.$on('row.deleting_failed', function(e, data) {
-                    $rootScope.rowDeleteErrorMessage = data.errorMessage;
+                    $scope.rowDeleteErrorMessage = data.errorMessage;
                 });
 
                 $scope.$watch(function() {
@@ -415,7 +415,7 @@ angular.module('Samson.DataGrid')
                 });
 
             },
-            controller: function($scope, $http, $injector) {
+            controller: function($scope, $http, $injector, $rootScope) {
                 $scope.hasErrors = false;
 
                 var dataService = {};

@@ -477,6 +477,10 @@ angular.module('Samson.DataGrid')
                     self.updateData();
                 });
 
+                $scope.$on('row.deleting_failed', function(e, data) {
+                    $scope.rowDeleteErrorMessage = data.errorMessage;
+                });
+
                 $scope.$watch(function() {
                     return getDriver().loading;
                 }, function(val) {
@@ -554,7 +558,7 @@ angular.module('Samson.DataGrid')
             });
 
         },
-        controller: function($scope, $http, $injector) {
+        controller: function($scope, $http, $injector, $rootScope) {
             $scope.hasErrors = false;
 
             var dataService = {};
@@ -572,9 +576,9 @@ angular.module('Samson.DataGrid')
                     _format: 'json'
                 }), row).success(function() {
                     $scope.$emit('row.deleted', row);
-                }).error(function(message) {
-                    alert(message);
-                    $scope.$emit('row.deleting_failed', row);
+                }).error( function(errorMessage, statusCode) {
+                    $scope.hasErrors = true;
+                    $rootScope.$broadcast('row.deleting_failed', {row: row, errorMessage: errorMessage, statusCode: statusCode});
                 });
             };
 

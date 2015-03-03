@@ -49,93 +49,92 @@
  *      The route runs through routing.generate, which expects a 'contract' parameter, which will now resolve to row.id.
  *
  */
-angular.module('Samson.DataGrid')
 
-    .directive('datagrid', function ($locale) {
+angular.module('Samson.DataGrid')
+    .directive('datagrid', function($locale) {
+
+        var resultDataText;
 
         switch ($locale.id) {
             case 'nl-nl':
-                var resultDataText = "{{ firstResult }} t/m {{ lastResult }} van {{ filteredResults }} resultaten getoond (totaal: {{ totalResults }})";
+                resultDataText = "{{ firstResult }} t/m {{ lastResult }} van {{ filteredResults }} resultaten getoond (totaal: {{ totalResults }})";
                 break;
             default:
-                var resultDataText = "{{ firstResult }} through {{ lastResult }} of {{ filteredResults }} results displayed (total: {{ totalResults }})";
+                resultDataText = "{{ firstResult }} through {{ lastResult }} of {{ filteredResults }} results displayed (total: {{ totalResults }})";
                 break;
         }
 
-        var directiveDefinitionObject = {
+        var service = {
             restrict: 'E',
             transclude: true,
             scope: true,
             templateUrl: '/bundles/samsondatagrid/views/datagrid.html',
             replace: true,
-            compile: function (tElement, tAttr) {
+            compile: function(tElement, tAttr) {
                 if ('ngRowController' in tAttr) {
                     tElement.find('tbody[ng-repeat]').attr('ng-controller', tAttr.ngRowController);
                 }
 
-                return function ($scope, iElement, iAttr) {
+                return function($scope, iElement, iAttr) {
                     var data = null;
 
-                    if ('headerTemplate' in iAttr) {
-                        $scope.headerTemplate = iAttr['headerTemplate'];
+                    // if an iAttr is present for the property, place it on the $scope.
+                    function overrideAttribute(prop) {
+                        if (!(prop in iAttr)) return;
+                        $scope[prop] = iAttr[prop];
                     }
-                    if ('bodyTemplate' in iAttr) {
-                        $scope.bodyTemplate = iAttr['bodyTemplate'];
+
+                    // override template attributes (since there's a load)
+                    function overrideTemplates(names) {
+                        names.map(function(tpl) {
+                            overrideAttribute(tpl + 'Template');
+                        });
                     }
-                    if ('formTemplate' in iAttr) {
-                        $scope.formTemplate = iAttr['formTemplate'];
+
+                    // process other parameters that have non-standardized key/value mappings.
+                    function optionalAttributes(properties) {
+                        for (var property in properties) {
+                            if (!(property in iAttr)) continue;
+                            properties[property](iAttr[property]);
+                        }
                     }
-                    if ('noResultsTemplate' in iAttr) {
-                        $scope.noResultsTemplate = iAttr['noResultsTemplate'];
-                    }
-                    if ('resultsTemplate' in iAttr) {
-                        $scope.resultsTemplate = iAttr['resultsTemplate'];
-                    }
-                    if ('filterColumns' in iAttr) {
-                        $scope.filterColumns = iAttr.filterColumns.split(',');
-                    }
+
+                    overrideTemplates(['header', 'body', 'form', 'noResults', 'results', 'colgroup', 'pagination']);
+
+                    optionalAttributes({
+                        ngRowController: function(prop) {
+                            $scope.rowController = prop;
+                        },
+                        filterColumns: function(prop) {
+                            $scope.filterColumns = prop.split(',');
+                        },
+                        routes: function(prop) {
+                            $scope.routes = $scope.$eval('{' + prop + '}');
+                        },
+                        service: function(prop) {
+                            $scope.dataService = prop;
+                        }
+                    });
+
                     if ($scope.data) {
                         data = $scope.data;
                     } else if ('data' in iAttr) {
-                        data = angular.fromJson(iAttr['data']);
-                    }
-                    if ('service' in iAttr) {
-                        $scope.dataService = iAttr.service;
-                    }
-                    if ('ngRowController' in iAttr) {
-                        $scope.rowController = iAttr.ngRowController;
-                    }
-                    if ('filterTemplate' in iAttr) {
-                        $scope.filterTemplate = iAttr.filterTemplate;
-                    }
-                    if ('colgroupTemplate' in iAttr) {
-                        $scope.colgroupTemplate = iAttr.colgroupTemplate;
-                    }
-                    if ('paginationTemplate' in iAttr) {
-                        $scope.paginationTemplate = iAttr.paginationTemplate;
+                        data = angular.fromJson(iAttr.data);
                     }
 
-                    $scope.driver = $scope.instantiateDriver('driver' in iAttr ? iAttr['driver'] : 'clientside');
-
-                    if (iAttr.routes) {
-                        $scope.routes = $scope.$eval('{' + iAttr.routes + '}');
-                    }
-                    $scope.routeParams = {};
-                    if (iAttr.routeParams) {
-                        $scope.routeParams = $scope.$eval(iAttr.routeParams);
-                    }
-                    $scope.idMap = {id: 'row.id'};
-                    if (iAttr.idMap) {
-                        $scope.idMap = $scope.$eval(iAttr.idMap);
-                    }
+                    $scope.driver = $scope.instantiateDriver(('driver' in iAttr) ? iAttr.driver : 'clientside');
+                    $scope.routeParams = iAttr.routeParams ? $scope.$eval(iAttr.routeParams) : $scope.routeParams = {};
+                    $scope.idMap = iAttr.idMap ? $scope.$eval(iAttr.idMap) : {
+                        id: 'row.id'
+                    };
 
                     // find all table header columns (td or th) within the first thead > tr
-                    setTimeout(function () {
+                    setTimeout(function() {
                         $scope.$apply(
-                            function () {
+                            function() {
                                 var $headerCells = iElement.find('thead:eq(0) tr:eq(0)').find('th, td');
                                 var count = 0;
-                                $headerCells.each(function () {
+                                $headerCells.each(function() {
                                     count += parseInt($(this).attr('colspan')) || 1;
                                 });
 
@@ -146,37 +145,42 @@ angular.module('Samson.DataGrid')
 
                     // overlay a div that's semi-transparent over most of the table to indicate it's loading.
                     var loadingEl = null;
-                    $scope.$watch('loading', function (val) {
+                    $scope.$watch('loading', function(val) {
                         if (!val && loadingEl) {
-                            setTimeout(function () {
+                            setTimeout(function() {
                                 loadingEl.width(iElement.find('.table').width()).height(iElement.find('.table').height());
                             }, 0);
-                            loadingEl.fadeTo(500, 0, function () {
+                            loadingEl.fadeTo(500, 0, function() {
                                 loadingEl.remove();
                                 loadingEl = null;
-                            })
+                            });
                         } else if (val && !loadingEl) {
                             loadingEl = $("<div class='datagrid-loader'>").appendTo('body').css({
-                                position: 'absolute',
-                                backgroundColor: 'white',
-                                zIndex: 10000
-                            }).position({my: 'left top', at: 'left top', of: iElement.find('.table')})
+                                    position: 'absolute',
+                                    backgroundColor: 'white',
+                                    zIndex: 10000
+                                }).position({
+                                    my: 'left top',
+                                    at: 'left top',
+                                    of: iElement.find('.table')
+                                })
                                 .width(iElement.find('.table').width()).height(iElement.find('.table').height())
-                                .fadeTo(0, 0).fadeTo(500, .85);
+                                .fadeTo(0, 0).fadeTo(500, 0.85);
                         }
                     });
 
                     $scope.setData(data);
-                }
+                };
             },
-            controller: function ($scope, $rootScope, $templateCache, $injector, $parse, $q, $timeout, $interpolate) {
+            controller: function($scope, $rootScope, $templateCache, $injector, $parse, $q, $timeout, $interpolate) {
                 $scope.editing = [];
                 $scope.newRows = [];
                 $scope.filter = {};
-                $scope.pagination = {};
-                $scope.pagination.currentPage;
+                $scope.pagination = {
+                    currentPage: 1
+                };
 
-                this.getDataService = function () {
+                this.getDataService = function() {
                     return $scope.dataService;
                 };
 
@@ -198,7 +202,8 @@ angular.module('Samson.DataGrid')
 
                 $scope.visibleRows = [];
 
-                $scope.$watch('filterColumns', function (newValue) {
+                $scope.$watch('filterColumns', function(newValue) {
+                    if (newValue === undefined) return;
                     callDriver('setFilterFields', newValue.map(function(el) {
                         return el.trim();
                     }));
@@ -210,7 +215,7 @@ angular.module('Samson.DataGrid')
                  * @param name
                  * @returns instantiated driver
                  */
-                $scope.instantiateDriver = function (name) {
+                $scope.instantiateDriver = function(name) {
                     return $injector.instantiate(drivers[name]);
                 };
 
@@ -218,14 +223,14 @@ angular.module('Samson.DataGrid')
                  * Return instantiated driver
                  * @returns {instantiated|*|$scope.driver}
                  */
-                var getDriver = function () {
+                var getDriver = function() {
                     return $scope.driver;
                 };
 
                 /**
                  * Execute a method on the driver (if it exists)
                  */
-                var callDriver = function (method) {
+                var callDriver = function(method) {
                     driver = getDriver();
                     if (!(method in driver)) {
                         throw Error('The driver has no method ' + method);
@@ -237,7 +242,7 @@ angular.module('Samson.DataGrid')
                  * Transform the data with an optional 'transformReponse' method defined in the dataService
                  * (if that's defined)
                  */
-                this.transform = function (data) {
+                this.transform = function(data) {
                     if (!$scope.dataService) {
                         return data;
                     }
@@ -251,7 +256,7 @@ angular.module('Samson.DataGrid')
                  * add a row to to the local array of data.
                  * @param data
                  */
-                this.addRow = function (data) {
+                this.addRow = function(data) {
                     callDriver('addRow', data, self.transform);
                     self.updateData();
                 };
@@ -259,7 +264,7 @@ angular.module('Samson.DataGrid')
                 /**
                  * Wait for the promise that the setPage from the driver may execute, and then re-render.
                  */
-                this.refresh = function () {
+                this.refresh = function() {
                     $q.when(callDriver('setPage', $scope.page)).then(self.updateData);
                 };
 
@@ -272,7 +277,8 @@ angular.module('Samson.DataGrid')
                  * updated values.
                  * @param data null || array data to set onto the service
                  */
-                $scope.setData = function (data) {
+                $scope.setData = function(data) {
+
                     if (null === data) {
                         service = $injector.get($scope.dataService);
                         service.datagridCtrl = self;
@@ -282,12 +288,12 @@ angular.module('Samson.DataGrid')
                     }
 
                     getDriver().loading = true;
-                    $q.when(data).then(function (data) {
+                    $q.when(data).then(function(data) {
                         callDriver('setData', data, self.transform);
                         getDriver().loading = false;
 
                         self.updateData();
-                    }, function (reason) {
+                    }, function(reason) {
                         throw Error('Error while fetching data: ' + reason);
                     });
                 };
@@ -298,19 +304,15 @@ angular.module('Samson.DataGrid')
                  * this makes sure that we actually end up with a $scope.visibleRows, firstResult, etc.
                  * Broadcasts a data.updated event when done.
                  */
-                this.updateData = function () {
-                    var properties = ['visibleRows', 'firstResult', 'lastResult', 'totalResults', 'filteredResults', 'page', 'pages', 'sort'];
-                    for (var i in properties) {
-                        var property = properties[i];
+                this.updateData = function() {
+                    ['visibleRows', 'firstResult', 'lastResult', 'totalResults', 'filteredResults', 'page', 'pages', 'sort'].map(function(property) {
                         var res = callDriver('get' + property.charAt(0).toUpperCase() + property.slice(1));
-                        // always use a dot for model-data.
                         if (property === 'page') {
                             $scope.pagination.currentPage = res;
                         } else {
                             $scope[property] = res;
                         }
-                    }
-
+                    });
                     $scope.$broadcast('data.updated', callDriver('getVisibleRows'));
                 };
 
@@ -318,15 +320,15 @@ angular.module('Samson.DataGrid')
                  *
                  * @param page
                  */
-                $scope.setPage = function (page) {
+                $scope.setPage = function(page) {
                     if ($scope.waiting) {
                         $timeout.cancel($scope.waiting);
                     }
-                    $scope.waiting = $timeout(function () {
+                    $scope.waiting = $timeout(function() {
                         var result = callDriver('setPage', page);
 
                         if (angular.isObject(result) && 'then' in result) {
-                            result.then(function () {
+                            result.then(function() {
                                 self.updateData();
                             });
 
@@ -334,35 +336,28 @@ angular.module('Samson.DataGrid')
                         }
 
                         self.updateData();
-                    }, 200)
-
+                    }, 200);
                 };
 
-                this.sort = function (sortField) {
+                this.sort = function(sortField) {
                     var result = callDriver('sort', sortField);
-
                     if (angular.isObject(result) && 'then' in result) {
-                        result.then(function () {
-                            self.updateData();
-                        });
-
+                        result.then(self.updateData);
                         return;
                     }
 
                     self.updateData();
                 };
 
-                $scope.isEditable = function (row) {
+                $scope.isEditable = function(row) {
                     return $scope.visibleRows.indexOf(row) > -1;
                 };
 
-                var generateParams = function (extraParams) {
-                    extraParams = typeof(extraParams) == 'undefined' ? {} : extraParams;
-
-                    return angular.extend(extraParams, $scope.routeParams)
+                var generateParams = function(extraParams) {
+                    return angular.extend(typeof(extraParams) == 'undefined' ? {} : extraParams, $scope.routeParams);
                 };
 
-                var generateIdParams = function (row, extraParams) {
+                var generateIdParams = function(row, extraParams) {
                     var params = {};
 
                     for (var i in $scope.idMap) {
@@ -374,32 +369,32 @@ angular.module('Samson.DataGrid')
                     return generateParams($.extend(extraParams, params));
                 };
 
-                $scope.createPath = function (extraParams) {
+                $scope.createPath = function(extraParams) {
                     extraParams = typeof(extraParams) == 'undefined' ? {} : extraParams;
-                    return Routing.generate($scope.routes['create'], generateParams(extraParams));
+                    return Routing.generate($scope.routes.create, generateParams(extraParams));
                 };
-                $scope.viewPath = function (row, extraParams) {
-                    return Routing.generate($scope.routes['view'], generateIdParams(row, extraParams));
+                $scope.viewPath = function(row, extraParams) {
+                    return Routing.generate($scope.routes.view, generateIdParams(row, extraParams));
                 };
-                $scope.editPath = function (row, extraParams) {
-                    return Routing.generate($scope.routes['edit'], generateIdParams(row, extraParams));
+                $scope.editPath = function(row, extraParams) {
+                    return Routing.generate($scope.routes.edit, generateIdParams(row, extraParams));
                 };
-                $scope.deletePath = function (row, extraParams) {
-                    return Routing.generate($scope.routes['delete'], generateIdParams(row, extraParams));
+                $scope.deletePath = function(row, extraParams) {
+                    return Routing.generate($scope.routes.delete, generateIdParams(row, extraParams));
                 };
                 /**
                  * Return the correct (form || tr) template based on if we're editing the current row or just displaying it.
                  * @param row
                  * @returns {$scope.formTemplate||$scope.bodyTemplate}
                  */
-                $scope.getRowTemplate = function (row) {
+                $scope.getRowTemplate = function(row) {
                     return $scope.editing.indexOf(row) > -1 || $scope.newRows.indexOf(row) > -1 ? $scope.formTemplate : $scope.bodyTemplate;
                 };
 
                 /**
                  * Mark a specific row for editing and copy the original data tot he $originalData array.
                  */
-                $scope.edit = function (row) {
+                $scope.edit = function(row) {
                     row.$originalData = {};
                     for (var i in row) {
                         if (i == '$originalData') {
@@ -414,7 +409,7 @@ angular.module('Samson.DataGrid')
                  * Add a new row to the 'newRows' array that will be used to render a new row in 'create' mode.
                  * @returns row just added
                  */
-                $scope.create = function () {
+                $scope.create = function() {
                     var row = self.transform({});
                     $scope.newRows.push(row);
                     return row;
@@ -424,7 +419,7 @@ angular.module('Samson.DataGrid')
                  * removes it from the newRows arraỵ
                  * @param row
                  */
-                $scope.cancel = function (row) {
+                $scope.cancel = function(row) {
                     var newRowsIndex = $scope.newRows.indexOf(row);
                     if (newRowsIndex > -1) {
                         $scope.newRows.splice(newRowsIndex, 1);
@@ -442,11 +437,11 @@ angular.module('Samson.DataGrid')
                 /**
                  * Monitor the filter.value model so that data can be refreshed upon filtering.
                  */
-                $scope.$watch('filter.value', function (newValue) {
+                $scope.$watch('filter.value', function(newValue) {
                     var result = callDriver('filter', newValue);
 
                     if (angular.isObject(result) && 'then' in result) {
-                        result.then(function () {
+                        result.then(function() {
                             self.updateData();
                         });
                         return;
@@ -458,33 +453,33 @@ angular.module('Samson.DataGrid')
                  * Catch 'row.updated' events, make sure that the row is transformed back to a read-only version
                  * of the form that it was in. Updates data afterwards.
                  */
-                $scope.$on('row.updated', function (e, row) {
+                $scope.$on('row.updated', function(e, row) {
                     $scope.editing.splice($scope.editing.indexOf(row), 1);
                     var transformedRow = self.transform(row);
                     for (var i in transformedRow) {
                         row[i] = transformedRow[i];
                     }
                     self.updateData();
-//                    self.paginateToObject(row);
+                    //                    self.paginateToObject(row);
                 });
 
-                $scope.$on('row.created', function (e, row) {
+                $scope.$on('row.created', function(e, row) {
                     callDriver('addRow', row, self.transform);
                     callDriver('update');
                     $scope.newRows.splice($scope.editing.indexOf(row), 1);
                     self.updateData();
-//                    self.paginateToObject(row);
+                    //                    self.paginateToObject(row);
                 });
 
-                $scope.$on('row.deleted', function (e, row) {
+                $scope.$on('row.deleted', function(e, row) {
                     callDriver('deleteRow', row);
                     $scope.editing.splice($scope.editing.indexOf(row), 1);
                     self.updateData();
                 });
 
-                $scope.$watch(function () {
+                $scope.$watch(function() {
                     return getDriver().loading;
-                }, function (val) {
+                }, function(val) {
                     $scope.loading = val;
                 });
 
@@ -493,154 +488,170 @@ angular.module('Samson.DataGrid')
                     self.refresh();
                 });
 
-                $scope.$watch('firstResult + lastResult + filteredResults + totalResults', function () {
+                $scope.$watch('firstResult + lastResult + filteredResults + totalResults', function() {
                     $scope.resultData = $interpolate(resultDataText)($scope);
                 });
             }
         };
-        return directiveDefinitionObject;
-    }).directive('datagridRowClick', function ($parse) {
-        return {
-            restrict: 'A',
-            require: '^datagridRow',
-            compile: function ($element, $attr) {
-                var fn = $parse($attr['datagridRowClick']);
-                return function ($scope, $element, $attr) {
-                    $element.on('click', function (event) {
-                        var elementsBetweenTargetAndHandler = $(event.target).parentsUntil($element).add($element);
-
-                        if (elementsBetweenTargetAndHandler.filter('a, :input, [ng-click]').length) {
-                            return;
-                        }
-
-                        $scope.$apply(function () {
-                            fn($scope, {$event: event});
-                        })
-                    })
-                };
-            }
-        }
+        return service;
     })
+
+.directive('datagridRowClick', function($parse) {
+    return {
+        restrict: 'A',
+        require: '^datagridRow',
+        compile: function($element, $attr) {
+            var fn = $parse($attr.datagridRowClick);
+            return function($scope, $element, $attr) {
+                $element.on('click', function(event) {
+                    var elementsBetweenTargetAndHandler = $(event.target).parentsUntil($element).add($element);
+
+                    if (elementsBetweenTargetAndHandler.filter('a, :input, [ng-click]').length) {
+                        return;
+                    }
+
+                    $scope.$apply(function() {
+                        fn($scope, {
+                            $event: event
+                        });
+                    });
+                });
+            };
+        }
+    };
+})
+
 /**
  * Datagrid-row, bound to the dataservice's row for this specific page of the resultset.
  * Wraps the row in the current rowTemplate, make sure that the dataservice is set on it
  * Watches the template for the 'editing' attribute so that it can transform the element whenever needed
  * into the editor version of itself. Also adds errors to the tooltip when it finds them.
  */
-    .directive('datagridRow', function ($compile, $templateCache, $http) {
-        return {
-            restrict: 'A',
-            require: '^datagrid',
-            link: function ($scope, iElement, iAttr, datagridCtrl) {
-                if (datagridCtrl.getDataService()) {
-                    $scope.setDataService(datagridCtrl.getDataService());
-                }
+.directive('datagridRow', function($compile, $templateCache, $http) {
+    return {
+        restrict: 'A',
+        require: '^datagrid',
+        link: function($scope, iElement, iAttr, datagridCtrl) {
+            if (datagridCtrl.getDataService()) {
+                $scope.setDataService(datagridCtrl.getDataService());
+            }
 
-                $scope.$watch(function () {
-                    return $scope.getRowTemplate($scope.row);
-                }, function (newTemplateId) {
-                    $http.get(newTemplateId, {cache: $templateCache}).success(function (template) {
-                        var $template = $(template);
-                        $template.find('input[name], textarea[name], select[name]').each(function () {
-                            $(this).attr('tooltip', '{{ errors["' + $(this).attr('name') + '"] }}').attr('tooltip-html', true);
-                        });
+            $scope.$watch(function() {
+                return $scope.getRowTemplate($scope.row);
+            }, function(newTemplateId) {
+                $http.get(newTemplateId, {
+                    cache: $templateCache
+                }).success(function(template) {
+                    var $template = $(template);
+                    $template.find('input[name], textarea[name], select[name]').each(function() {
+                        $(this).attr('tooltip', '{{ errors["' + $(this).attr('name') + '"] }}').attr('tooltip-html', true);
+                    });
 
-                        $compile($template)($scope, function (clonedElement) {
-                            iElement.empty().append(clonedElement);
-                        });
+                    $compile($template)($scope, function(clonedElement) {
+                        iElement.empty().append(clonedElement);
                     });
                 });
+            });
 
-            },
-            controller: function ($scope, $http, $injector) {
-                $scope.hasErrors = false;
+        },
+        controller: function($scope, $http, $injector) {
+            $scope.hasErrors = false;
 
-                var dataService = {};
+            var dataService = {};
 
-                $scope.setDataService = function (dataservice) {
-                    dataService = $injector.get($scope.dataService);
-                };
+            $scope.setDataService = function(dataservice) {
+                dataService = $injector.get($scope.dataService);
+            };
 
-                $scope.delete = function (row) {
-                    if (!confirm('Are you sure you wish to delete this row?')) {
-                        return;
-                    }
+            $scope.delete = function(row) {
+                if (!confirm('Are you sure you wish to delete this row?')) {
+                    return;
+                }
 
-                    $http.delete($scope.deletePath(row, {_format: 'json'}), row).success(function () {
-                        $scope.$emit('row.deleted', row);
-                    }).error(function (message) {
-                        alert(message);
-                        $scope.$emit('row.deleting_failed', row);
-                    })
-                };
+                $http.delete($scope.deletePath(row, {
+                    _format: 'json'
+                }), row).success(function() {
+                    $scope.$emit('row.deleted', row);
+                }).error(function(message) {
+                    alert(message);
+                    $scope.$emit('row.deleting_failed', row);
+                });
+            };
 
-                $scope.save = function (row) {
-                    var method;
-                    var url;
+            $scope.save = function(row) {
+                var method;
+                var url;
 
-                    if ($scope.isEditable(row)) {
-                        method = 'put';
-                        url = $scope.editPath(row, {_format: 'json'});
-                    } else {
-                        method = 'post';
-                        url = $scope.createPath({_format: 'json'});
-                    }
-
-                    var options = {};
-
-                    if ('transformRequest' in dataService) {
-                        options.transformRequest = dataService.transformRequest;
-                    }
-
-                    $http[method](url, row, options).success(function (data) {
-                        $scope.$broadcast('errors.updated', {});
-                        $scope.hasErrors = false;
-
-                        if (method == 'put') {
-                            angular.copy(data, row);
-                            $scope.$emit('row.updated', row);
-                        } else {
-                            if (angular.isArray(data)) {
-                                for (var i in data) {
-                                    $scope.$emit('row.created', data[i]);
-                                }
-                            } else {
-                                angular.copy(data, row);
-                                $scope.$emit('row.created', row);
-                            }
-                        }
-                    }).error(function (data) {
-
-                        if (angular.isObject(data)) {
-                            data.errors = data.errors || [];
-                            data.errors.unshift('The form has errors');
-                        } else {
-                            data = {errors: 'An error occurred while saving'};
-                        }
-                        $scope.hasErrors = true;
-                        $scope.$broadcast('errors.updated', data);
-
-                        var errors = new ErrorContainer(data);
-                        $scope.errors = {};
-
-                        for (var i in $scope.form) {
-                            if (i[0] == '$') {
-                                continue;
-                            }
-
-                            var fieldErrors = errors.read(i);
-                            $scope.form[i].$setValidity('server', !fieldErrors.length);
-                            $scope.errors[i] = "<ul>";
-                            fieldErrors.forEach(function (error) {
-                                $scope.errors[i] += "<li>" + error + "</li>";
-                            });
-                            $scope.errors[i] += "</ul>";
-                        }
+                if ($scope.isEditable(row)) {
+                    method = 'put';
+                    url = $scope.editPath(row, {
+                        _format: 'json'
+                    });
+                } else {
+                    method = 'post';
+                    url = $scope.createPath({
+                        _format: 'json'
                     });
                 }
-            }
+
+                var options = {};
+
+                if ('transformRequest' in dataService) {
+                    options.transformRequest = dataService.transformRequest;
+                }
+
+                $http[method](url, row, options).success(function(data) {
+                    $scope.$broadcast('errors.updated', {});
+                    $scope.hasErrors = false;
+
+                    if (method == 'put') {
+                        angular.copy(data, row);
+                        $scope.$emit('row.updated', row);
+                    } else {
+                        if (angular.isArray(data)) {
+                            for (var i in data) {
+                                $scope.$emit('row.created', data[i]);
+                            }
+                        } else {
+                            angular.copy(data, row);
+                            $scope.$emit('row.created', row);
+                        }
+                    }
+                }).error(function(data) {
+
+                    if (angular.isObject(data)) {
+                        data.errors = data.errors || [];
+                        data.errors.unshift('The form has errors');
+                    } else {
+                        data = {
+                            errors: 'An error occurred while saving'
+                        };
+                    }
+                    $scope.hasErrors = true;
+                    $scope.$broadcast('errors.updated', data);
+
+                    var errors = new ErrorContainer(data);
+                    $scope.errors = {};
+
+                    for (var i in $scope.form) {
+                        if (i[0] == '$') {
+                            continue;
+                        }
+
+                        var fieldErrors = errors.read(i);
+                        $scope.form[i].$setValidity('server', !fieldErrors.length);
+                        $scope.errors[i] = "<ul>";
+                        fieldErrors.forEach(function(error) {
+                            $scope.errors[i] += "<li>" + error + "</li>";
+                        });
+                        $scope.errors[i] += "</ul>";
+                    }
+                });
+            };
         }
-    })
+    };
+})
+
 /**
  * datagrid-errors directive
  *
@@ -652,67 +663,68 @@ angular.module('Samson.DataGrid')
  * Usage: @see doc/crud.md
  * `` <td><div datagrid-errors="modelProperty"></div> <input ng-model="row.modelProperty"></td>``
  */
-    .directive('datagridErrors', function () {
-        return {
-            restrict: 'A',
-            require: '^datagridRow',
-            scope: true,
-            template: '<div ng-repeat="error in errors">{{ error }}</div>',
-            link: function ($scope, iElement, iAttr, datagrid) {
-                $scope.errors = [];
-                $scope.path;
+.directive('datagridErrors', function() {
+    return {
+        restrict: 'A',
+        require: '^datagridRow',
+        scope: true,
+        template: '<div ng-repeat="error in errors">{{ error }}</div>',
+        link: function($scope, iElement, iAttr, datagrid) {
+            $scope.errors = [];
 
-                if (iAttr.datagridErrors) {
-                    var pathParts = iAttr.datagridErrors.split('.');
-                    for (var i = pathParts.length - 1; i >= 0; i--) {
-                        pathParts.splice(i, 0, 'children');
-                    }
-                    $scope.path = pathParts.join('.') + '.errors';
-                } else {
-                    $scope.path = 'errors';
+            if (iAttr.datagridErrors) {
+                var pathParts = iAttr.datagridErrors.split('.');
+                for (var i = pathParts.length - 1; i >= 0; i--) {
+                    pathParts.splice(i, 0, 'children');
                 }
-            },
-            controller: function ($scope, $parse) {
-                $scope.$on('errors.updated', function (e, data) {
-                    $scope.errors = $parse($scope.path)(data);
-                })
+                $scope.path = pathParts.join('.') + '.errors';
+            } else {
+                $scope.path = 'errors';
             }
+        },
+        controller: function($scope, $parse) {
+            $scope.$on('errors.updated', function(e, data) {
+                $scope.errors = $parse($scope.path)(data);
+            });
         }
-    })
+    };
+})
+
 /**
  * Sortable directive for Datagrid columns.
  * Usage: `` <th sortable="billingCompany.name" class="sorting">Klant</th> ``
  * Fires the sort method on datagrid object when clicked, and updates the sort css class when
  * it changes.
  */
-    .directive('sortable', function () {
-        return {
-            restrict: 'A',
-            require: '^datagrid',
-            link: function ($scope, iElement, iAttr, datagrid) {
-                var name = iAttr.sortable || iAttr.text().toLowerCase();
-                iElement.click(function () {
-                    $scope.$apply(function () {
-                        datagrid.sort(name);
-                    })
+.directive('sortable', function() {
+    return {
+        restrict: 'A',
+        require: '^datagrid',
+        link: function($scope, iElement, iAttr, datagrid) {
+            var name = iAttr.sortable || iAttr.text().toLowerCase();
+            iElement.click(function() {
+                $scope.$apply(function() {
+                    datagrid.sort(name);
                 });
+            });
 
-                $scope.$watch('sort', function (newValue) {
-                    if (typeof(newValue) != 'undefined') {
-                        iElement.removeClass('sorting sorting-asc sorting-desc');
+            $scope.$watch('sort', function(newValue) {
+                if (typeof(newValue) != 'undefined') {
+                    iElement.removeClass('sorting sorting-asc sorting-desc');
 
-                        if (name == newValue[0]) {
-                            iElement.addClass('sorting-' + newValue[1]);
-                        } else {
-                            iElement.addClass('sorting');
-                        }
+                    if (name == newValue[0]) {
+                        iElement.addClass('sorting-' + newValue[1]);
                     } else {
                         iElement.addClass('sorting');
                     }
-                });
-            }
+                } else {
+                    iElement.addClass('sorting');
+                }
+            });
         }
-    })
+    };
+})
+
 /**
  * Row click directive
  * Makes sure that you can use ctrl+click on a row to open a new window
@@ -720,36 +732,36 @@ angular.module('Samson.DataGrid')
  * And navigates there via $window.location.
  * If the element is not a hyperlink, we passthrough the click event.
  */
-    .directive('rowClick', function ($window) {
-        return {
-            restrict: 'A',
-            link: function ($scope, iElement, iAttr) {
-                var $row = iElement.closest('tr');
+.directive('rowClick', function($window) {
+    return {
+        restrict: 'A',
+        link: function($scope, iElement, iAttr) {
+            var $row = iElement.closest('tr');
 
-                var action = function (e) {
-                    if (iElement.prop('tagName') == 'A' && !iAttr['dataDialog']) {
-                        if (e.which == 2 || e.ctrlKey) {
-                            $window.open(iAttr.href);
-                        } else {
-                            $window.location.href = iAttr.href;
-                        }
+            var action = function(e) {
+                if (iElement.prop('tagName') == 'A' && !iAttr.dataDialog) {
+                    if (e.which == 2 || e.ctrlKey) {
+                        $window.open(iAttr.href);
                     } else {
-                        iElement.trigger('click');
+                        $window.location.href = iAttr.href;
                     }
+                } else {
+                    iElement.trigger('click');
                 }
+            };
 
-                $row
-                    .css('cursor', 'pointer')
-                    .on('click', function (e) {
-                        if (!$(e.target).is('a') && !($(e.target).closest('a, input').length)) {
-                            action(e);
-                            e.preventDefault();
-                        }
-                    })
-                ;
-            }
+            $row
+                .css('cursor', 'pointer')
+                .on('click', function(e) {
+                    if (!$(e.target).is('a') && !($(e.target).closest('a, input').length)) {
+                        action(e);
+                        e.preventDefault();
+                    }
+                });
         }
-    })
+    };
+})
+
 /**
  * Single-input directive to change the filter value passed to the datagrid.
  * Mostly created so that the filterbox can be overridden.
@@ -766,10 +778,10 @@ angular.module('Samson.DataGrid')
  * > The default delimiter is a comma followed by a space - equivalent to ng-list=", ".
  * > You can specify a custom delimiter as the value of the ngList attribute - for example, ng-list=" | ".)
  */
-    .directive('datagridFilterbox', function () {
-        return {
-            restrict: 'E',
-            replace: true,
-            template: '<input type="text" ng-model="filter.value" ng-list="/\\s+/" autocapitalize="off">'
-        }
-    });
+.directive('datagridFilterbox', function() {
+    return {
+        restrict: 'E',
+        replace: true,
+        template: '<input type="text" ng-model="filter.value" ng-list="/\\s+/" autocapitalize="off">'
+    };
+});

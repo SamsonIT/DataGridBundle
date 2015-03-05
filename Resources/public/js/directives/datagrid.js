@@ -99,7 +99,7 @@ angular.module('Samson.DataGrid')
                         }
                     }
 
-                    overrideTemplates(['header', 'body', 'form', 'noResults', 'results', 'colgroup', 'pagination']);
+                    overrideTemplates(['header', 'body', 'form', 'noResults', 'results', 'colgroup', 'pagination', 'filter']);
 
                     optionalAttributes({
                         ngRowController: function(prop) {

@@ -213,6 +213,7 @@ drivers['knp-paginator'] = function($http, $q, $location, $timeout) {
                 if (newFilter == filter) {
                     return;
                 }
+                filter = newFilter;
                 var self = this;
                 var pageParams = {};
                 pageParams[data.paginator_options.filterFieldParameterName] = filterFields;
@@ -222,7 +223,7 @@ drivers['knp-paginator'] = function($http, $q, $location, $timeout) {
                 var routeParams = getRouteParams(pageParams);
                 self.loading = true;
                 return $http.get(generateRoute(data.route, routeParams), {
-                    timeout: $cancelRequest
+                    timeout: $cancelRequest.promise
                 }).success(function(newData) {
                     self.loading = false;
                     self.setData(newData, data.transformFn);

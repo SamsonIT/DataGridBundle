@@ -4,17 +4,16 @@ drivers['knp-paginator'] = function($http, $q, $location, $timeout) {
         filter = '',
         filterTimeout,
         filterFields,
-        $cancelRequest = null,
 
         /**
          * Cancel any outstanding active requests if they're active.
          * To prevent hammering the server with quick user-interactions with the interface.
          */
         abortActiveRequest = function() {
-            if ($cancelRequest !== null && ('resolve' in $cancelRequest)) {
-                $cancelRequest.resolve(); // reject promise timeout for previous page loads so that it aborts.
+            if (filterTimeout) {
+                clearTimeout(filterTimeout);
+                filterTimeout = null;
             }
-            $cancelRequest = $q.defer();
         },
 
         /**
@@ -150,7 +149,6 @@ drivers['knp-paginator'] = function($http, $q, $location, $timeout) {
                 }
                 page = Math.min(Math.max(1, page), this.getPages().length);
 
-                var deferred = $q.defer();
                 var self = this;
                 var pageParams = {};
                 pageParams[data.paginator_options.pageParameterName] = page;
@@ -159,17 +157,17 @@ drivers['knp-paginator'] = function($http, $q, $location, $timeout) {
                 this.loading = true;
                 abortActiveRequest(); // abort $cancelRequest if running and create a new $cancelRequest.
 
-                $http.get(generateRoute(data.route, routeParams), {
-                    timeout: $cancelRequest.promise
-                }).success(function(newData) {
-                    self.loading = false;
-                    self.setData(newData, data.transformFn);
-                    deferred.resolve();
+                var p = $q.defer();
+                filterTimeout = setTimeout(function() {
+                    $http.get(generateRoute(data.route, routeParams)).success(function (newData) {
+                        self.loading = false;
+                        self.setData(newData, data.transformFn);
+                        deferred.resolve();
 
-                    $location.search(routeParams).replace();
-                });
-
-                return deferred.promise;
+                        $location.search(routeParams).replace();
+                    });
+                }, 550);
+                return p.promise;
             },
 
             /**
@@ -178,7 +176,6 @@ drivers['knp-paginator'] = function($http, $q, $location, $timeout) {
              * @returns Promise new HTTP request executing.
              */
             sort: function(column) {
-                var deferred = $q.defer();
                 var self = this;
                 var sortParams = {};
                 sortParams[data.paginator_options.sortFieldParameterName] = column;
@@ -188,17 +185,17 @@ drivers['knp-paginator'] = function($http, $q, $location, $timeout) {
                 this.loading = true;
                 abortActiveRequest();
 
-                $http.get(generateRoute(data.route, routeParams), {
-                    timeout: $cancelRequest.promise
-                }).success(function(newData) {
-                    self.loading = false;
-                    self.setData(newData, data.transformFn);
-                    deferred.resolve();
+                var p = $q.defer();
+                filterTimeout = setTimeout(function() {
+                    $http.get(generateRoute(data.route, routeParams)).success(function (newData) {
+                        self.loading = false;
+                        self.setData(newData, data.transformFn);
+                        p.resolve();
+                        $location.search(routeParams).replace();
+                    });
+                }, 550)
 
-                    $location.search(routeParams).replace();
-                });
-
-                return deferred.promise;
+                return p.promise;
             },
 
             /**
@@ -222,13 +219,18 @@ drivers['knp-paginator'] = function($http, $q, $location, $timeout) {
 
                 var routeParams = getRouteParams(pageParams);
                 self.loading = true;
-                return $http.get(generateRoute(data.route, routeParams), {
-                    timeout: $cancelRequest.promise
-                }).success(function(newData) {
-                    self.loading = false;
-                    self.setData(newData, data.transformFn);
-                    $location.search(routeParams).replace();
-                });
+
+                var p = $q.defer();
+                filterTimeout = setTimeout(function() {
+                    $http.get(generateRoute(data.route, routeParams)).success(function(newData) {
+                        self.loading = false;
+                        self.setData(newData, data.transformFn);
+                        $location.search(routeParams).replace();
+                        p.resolve();
+                    });
+                }, 550);
+
+                return p.promise;
             },
 
             /**

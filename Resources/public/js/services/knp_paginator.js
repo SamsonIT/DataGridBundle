@@ -162,8 +162,7 @@ drivers['knp-paginator'] = function($http, $q, $location, $timeout) {
                     $http.get(generateRoute(data.route, routeParams)).success(function (newData) {
                         self.loading = false;
                         self.setData(newData, data.transformFn);
-                        deferred.resolve();
-
+                        p.resolve();
                         $location.search(routeParams).replace();
                     });
                 }, 550);

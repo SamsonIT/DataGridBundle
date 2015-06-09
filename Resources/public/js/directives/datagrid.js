@@ -268,6 +268,14 @@ angular.module('Samson.DataGrid')
                     $q.when(callDriver('setPage', $scope.page)).then(self.updateData);
                 };
 
+                /**
+                 * Manually set data.
+                 * @param data
+                 */
+                this.forceData = function(data){
+                    $scope.setData(data);
+                };
+
 
                 /**
                  * Set data on the driver (either automatically resolve the data or pass a data array with rows)

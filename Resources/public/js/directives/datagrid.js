@@ -99,7 +99,7 @@ angular.module('Samson.DataGrid')
                         }
                     }
 
-                    overrideTemplates(['header', 'body', 'form', 'noResults', 'results', 'colgroup', 'pagination', 'filter']);
+                    overrideTemplates(['header', 'body', 'form', 'noResults', 'results', 'colgroup', 'pagination', 'filter', 'footer']);
 
                     optionalAttributes({
                         ngRowController: function(prop) {
@@ -199,6 +199,7 @@ angular.module('Samson.DataGrid')
                 $scope.filterTemplate = '/bundles/samsondatagrid/views/filter.html';
                 $scope.paginationTemplate = '/bundles/samsondatagrid/views/pagination.html';
                 $scope.colgroupTemplate = null;
+                $scope.footerTemplate = null;
 
                 $scope.visibleRows = [];
 

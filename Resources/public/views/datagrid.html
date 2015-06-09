@@ -13,6 +13,7 @@
             <tbody ng-repeat="row in visibleRows" datagrid-row ng-form="form"></tbody>
             <!--ng-include="getRowTemplate(row)"-->
             <tbody><tr ng-include='!visibleRows.length && !newRows.length && noResultsTemplate'></tr></tbody>
+            <tfoot ng-include="footerTemplate && footerTemplate"></tfoot>
         </table>
     </div>
 

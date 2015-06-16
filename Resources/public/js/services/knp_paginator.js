@@ -1,5 +1,5 @@
 var drivers = drivers || {};
-drivers['knp-paginator'] = function($http, $q, $location, $timeout) {
+drivers['knp-paginator'] = function ($http, $q, $location, $timeout) {
     var data = [],
         filter = '',
         filterTimeout,
@@ -9,7 +9,7 @@ drivers['knp-paginator'] = function($http, $q, $location, $timeout) {
          * Cancel any outstanding active requests if they're active.
          * To prevent hammering the server with quick user-interactions with the interface.
          */
-        abortActiveRequest = function() {
+        abortActiveRequest = function () {
             if (filterTimeout) {
                 clearTimeout(filterTimeout);
                 filterTimeout = null;
@@ -23,7 +23,7 @@ drivers['knp-paginator'] = function($http, $q, $location, $timeout) {
          * @param object params KNPPaginator options.
          */
 
-        getRouteParams = function(params) {
+        getRouteParams = function (params) {
             var defaults = {};
             if (!angular.isArray(data.params)) {
                 angular.copy(data.params, defaults);
@@ -43,7 +43,7 @@ drivers['knp-paginator'] = function($http, $q, $location, $timeout) {
          * @param params object
          * @returns {string|*}
          */
-        generateRoute = function(routeName, params) {
+        generateRoute = function (routeName, params) {
             params = angular.copy(params);
             params._format = 'json';
             return Routing.generate(routeName, params);
@@ -58,7 +58,7 @@ drivers['knp-paginator'] = function($http, $q, $location, $timeout) {
              * @param newData array with objects of new data.
              * @param transformFn
              */
-            setData: function(newData, transformFn) {
+            setData: function (newData, transformFn) {
                 for (var i in newData.items) {
                     newData.items[i] = transformFn(newData.items[i]);
                 }
@@ -69,21 +69,21 @@ drivers['knp-paginator'] = function($http, $q, $location, $timeout) {
              * Return all items that were fetched.
              * @returns array
              */
-            getVisibleRows: function() {
+            getVisibleRows: function () {
                 return data.items;
             },
             /**
              * Return current page number
              * @returns int
              */
-            getPage: function() {
+            getPage: function () {
                 return parseInt(data.current_page_number);
             },
             /**
              * Fetch an array of page numbers.
              * @returns array with one item for each page number.
              */
-            getPages: function() {
+            getPages: function () {
                 var pages = [];
                 for (var x = 1; x <= Math.ceil(data.total_count / data.num_items_per_page); x++) {
                     pages.push(x);
@@ -94,21 +94,21 @@ drivers['knp-paginator'] = function($http, $q, $location, $timeout) {
              * Store new filter fields in the adapter.
              * @param newFilterFields
              */
-            setFilterFields: function(newFilterFields) {
+            setFilterFields: function (newFilterFields) {
                 filterFields = newFilterFields;
             },
             /**
              * Get the amount of items on the first page.
              * @returns {number}
              */
-            getFirstResult: function() {
+            getFirstResult: function () {
                 return (data.current_page_number - 1) * data.num_items_per_page + 1;
             },
             /**
              * Calculate the amount of items on the last page.
              * @returns {number}
              */
-            getLastResult: function() {
+            getLastResult: function () {
                 var last = data.current_page_number * data.num_items_per_page;
                 if (last > data.total_count) {
                     last = data.total_count;
@@ -119,14 +119,14 @@ drivers['knp-paginator'] = function($http, $q, $location, $timeout) {
              * Return total number of items
              * @returns {number}
              */
-            getTotalResults: function() {
+            getTotalResults: function () {
                 return data.total_count;
             },
             /**
              * Return total number of items
              * @returns {number}
              */
-            getFilteredResults: function() {
+            getFilteredResults: function () {
                 return data.total_count;
             },
 
@@ -134,7 +134,7 @@ drivers['knp-paginator'] = function($http, $q, $location, $timeout) {
              * Return the default sort field and direction
              * @returns array with 2 items: [sortfield, sortdirection]
              */
-            getSort: function() {
+            getSort: function () {
                 return [data.params.sort, data.params.direction];
             },
             /**
@@ -143,7 +143,7 @@ drivers['knp-paginator'] = function($http, $q, $location, $timeout) {
              * @param page page number to switch to
              * @returns Promise to fetch new data
              */
-            setPage: function(page) {
+            setPage: function (page) {
                 if (page < 1) {
                     page = 1;
                 }
@@ -158,15 +158,16 @@ drivers['knp-paginator'] = function($http, $q, $location, $timeout) {
                 abortActiveRequest(); // abort $cancelRequest if running and create a new $cancelRequest.
 
                 var p = $q.defer();
-                filterTimeout = setTimeout(function() {
-                    $http.get(generateRoute(data.route, routeParams)).success(function (newData) {
-                        self.loading = false;
-                        self.setData(newData, data.transformFn);
-                        p.resolve();
-                        $location.search(routeParams).replace();
-                    });
-                }, 550);
-                return p.promise;
+                return $http.get(generateRoute(data.route, routeParams)).then(function (response) {
+                    var newData = response.data;
+                    self.loading = false;
+                    self.setData(newData, data.transformFn);
+
+                    $location.search(routeParams).replace();
+                    return newData;
+                }, function () {
+                    self.loading = false;
+                });
             },
 
             /**
@@ -174,7 +175,7 @@ drivers['knp-paginator'] = function($http, $q, $location, $timeout) {
              * @param column column to sort on. Will sort reverse when re-invoked.
              * @returns Promise new HTTP request executing.
              */
-            sort: function(column) {
+            sort: function (column) {
                 var self = this;
                 var sortParams = {};
                 sortParams[data.paginator_options.sortFieldParameterName] = column;
@@ -185,7 +186,7 @@ drivers['knp-paginator'] = function($http, $q, $location, $timeout) {
                 abortActiveRequest();
 
                 var p = $q.defer();
-                filterTimeout = setTimeout(function() {
+                filterTimeout = setTimeout(function () {
                     $http.get(generateRoute(data.route, routeParams)).success(function (newData) {
                         self.loading = false;
                         self.setData(newData, data.transformFn);
@@ -202,7 +203,7 @@ drivers['knp-paginator'] = function($http, $q, $location, $timeout) {
              * @param newFilter
              * @returns {Promise}
              */
-            filter: function(newFilter) {
+            filter: function (newFilter) {
                 if (typeof(newFilter) == 'undefined') {
                     newFilter = '';
                 }
@@ -220,8 +221,8 @@ drivers['knp-paginator'] = function($http, $q, $location, $timeout) {
                 self.loading = true;
 
                 var p = $q.defer();
-                filterTimeout = setTimeout(function() {
-                    $http.get(generateRoute(data.route, routeParams)).success(function(newData) {
+                filterTimeout = setTimeout(function () {
+                    $http.get(generateRoute(data.route, routeParams)).success(function (newData) {
                         self.loading = false;
                         self.setData(newData, data.transformFn);
                         $location.search(routeParams).replace();
@@ -235,7 +236,7 @@ drivers['knp-paginator'] = function($http, $q, $location, $timeout) {
             /**
              * For updating the current view, we re-set the page to this.getPage() to trigger a refresh.
              */
-            update: function() {
+            update: function () {
                 this.setPage(this.getPage());
             },
             /**
@@ -244,7 +245,7 @@ drivers['knp-paginator'] = function($http, $q, $location, $timeout) {
              * @param row
              * @param transformFn
              */
-            addRow: function(row, transformFn) {
+            addRow: function (row, transformFn) {
                 row = transformFn(row);
                 data.items.push(row);
                 this.update();
@@ -254,7 +255,7 @@ drivers['knp-paginator'] = function($http, $q, $location, $timeout) {
              * Remove the deleted row from the current view and then fire an update data request to fetch the new view data.
              * @param row
              */
-            deleteRow: function(row) {
+            deleteRow: function (row) {
                 data.items.splice(data.items.indexOf(row), 1);
                 this.update();
             }

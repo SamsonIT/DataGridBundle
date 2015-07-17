@@ -11,7 +11,7 @@ drivers['knp-paginator'] = function ($http, $q, $location, $timeout) {
          */
         abortActiveRequest = function () {
             if (filterTimeout) {
-                clearTimeout(filterTimeout);
+                $timeout.cancel(filterTimeout);
                 filterTimeout = null;
             }
         },
@@ -157,6 +157,7 @@ drivers['knp-paginator'] = function ($http, $q, $location, $timeout) {
                 this.loading = true;
                 abortActiveRequest(); // abort $cancelRequest if running and create a new $cancelRequest.
 
+                var p = $q.defer();
                 return $http.get(generateRoute(data.route, routeParams)).then(function (response) {
                     var newData = response.data;
                     self.loading = false;
@@ -184,15 +185,17 @@ drivers['knp-paginator'] = function ($http, $q, $location, $timeout) {
                 this.loading = true;
                 abortActiveRequest();
 
-                return $http.get(generateRoute(data.route, routeParams)).then(function (response) {
-                    var newData = response.data;
-                    self.loading = false;
-                    self.setData(newData, data.transformFn);
-                    $location.search(routeParams).replace();
-                    return newData;
-                }, function () {
-                    self.loading = false;
-                });
+                var p = $q.defer();
+                filterTimeout = $timeout(function () {
+                    $http.get(generateRoute(data.route, routeParams)).success(function (newData) {
+                        self.loading = false;
+                        self.setData(newData, data.transformFn);
+                        p.resolve();
+                        $location.search(routeParams).replace();
+                    });
+                }, 250)
+
+                return p.promise;
             },
 
             /**
@@ -217,15 +220,17 @@ drivers['knp-paginator'] = function ($http, $q, $location, $timeout) {
                 var routeParams = getRouteParams(pageParams);
                 self.loading = true;
 
-                return $http.get(generateRoute(data.route, routeParams)).then(function (response) {
-                    var newData = response.data;
-                    self.loading = false;
-                    self.setData(newData, data.transformFn);
-                    $location.search(routeParams).replace();
-                    return newData;
-                }, function () {
-                    self.loading = false;
-                });
+                var p = $q.defer();
+                filterTimeout = $timeout(function () {
+                    $http.get(generateRoute(data.route, routeParams)).success(function (newData) {
+                        self.loading = false;
+                        self.setData(newData, data.transformFn);
+                        $location.search(routeParams).replace();
+                        p.resolve();
+                    });
+                }, 250);
+
+                return p.promise;
             },
 
             /**

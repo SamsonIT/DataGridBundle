@@ -10,6 +10,9 @@ use Symfony\Component\Form\FormFactoryInterface;
 
 class ControllerHelper
 {
+
+    const DATAGRID_VERSION = 2;
+
     private $formFactory;
     private $viewFactory;
     private $em;

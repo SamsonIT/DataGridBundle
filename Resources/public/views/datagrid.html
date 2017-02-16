@@ -3,7 +3,7 @@
 
     </ng-include>
 
-    <div class=".data-grid-delete-error-message">{{ rowDeleteErrorMessage }}</div>
+    <div ng-if="rowDeleteErrorMessage" class="data-grid-delete-error-message"><i class="fa fa-warning "></i> {{ rowDeleteErrorMessage }}</div>
 
     <div class="table">
         <table class="list">

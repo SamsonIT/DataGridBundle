@@ -633,7 +633,11 @@ angular.module('Samson.DataGrid')
                 }).error(function(data) {
 
                     if (angular.isObject(data)) {
-                        data.errors = data.errors || [];
+                        if (data[0]) {
+                            data.errors = [data[0].message]
+                        } else {
+                            data.errors = data.errors || [];
+                        }
                         data.errors.unshift('The form has errors');
                     } else {
                         data = {

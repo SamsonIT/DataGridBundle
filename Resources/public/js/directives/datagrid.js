@@ -263,6 +263,16 @@ angular.module('Samson.DataGrid')
                 };
 
                 /**
+                 * Delete a row from the set of data.
+                 * @param row
+                 */
+                this.deleteRow = function(row) {
+                    callDriver('deleteRow', row);
+                    $scope.editing.splice($scope.editing.indexOf(row), 1);
+                    self.updateData();
+                };
+
+                /**
                  * Wait for the promise that the setPage from the driver may execute, and then re-render.
                  */
                 this.refresh = function() {
@@ -480,10 +490,11 @@ angular.module('Samson.DataGrid')
                     //                    self.paginateToObject(row);
                 });
 
-                $scope.$on('row.deleted', function(e, row) {
-                    callDriver('deleteRow', row);
-                    $scope.editing.splice($scope.editing.indexOf(row), 1);
-                    self.updateData();
+                /**
+                 * @deprecated Use this.deleteRow() for deleting.
+                 */
+                $scope.$on('row.deleted', function (e, row) {
+                    self.deleteRow();
                 });
 
                 $scope.$on('row.deleting_failed', function(e, data) {
@@ -545,9 +556,26 @@ angular.module('Samson.DataGrid')
         restrict: 'A',
         require: '^datagrid',
         link: function($scope, iElement, iAttr, datagridCtrl) {
+            var $rootScope = $scope.$root;
+
             if (datagridCtrl.getDataService()) {
                 $scope.setDataService(datagridCtrl.getDataService());
             }
+
+            $scope.delete = function(row) {
+                if (!confirm('Are you sure you wish to delete this row?')) {
+                    return;
+                }
+
+                $http.delete($scope.deletePath(row, {
+                    _format: 'json'
+                }), row).success(function() {
+                    datagridCtrl.deleteRow(row);
+                }).error( function(errorMessage, statusCode) {
+                    $scope.hasErrors = true;
+                    $rootScope.$broadcast('row.deleting_failed', {row: row, errorMessage: errorMessage, statusCode: statusCode});
+                });
+            };
 
             $scope.$watch(function() {
                 return $scope.getRowTemplate($scope.row);
@@ -574,21 +602,6 @@ angular.module('Samson.DataGrid')
 
             $scope.setDataService = function(dataservice) {
                 dataService = $injector.get($scope.dataService);
-            };
-
-            $scope.delete = function(row) {
-                if (!confirm('Are you sure you wish to delete this row?')) {
-                    return;
-                }
-
-                $http.delete($scope.deletePath(row, {
-                    _format: 'json'
-                }), row).success(function() {
-                    $scope.$emit('row.deleted', row);
-                }).error( function(errorMessage, statusCode) {
-                    $scope.hasErrors = true;
-                    $rootScope.$broadcast('row.deleting_failed', {row: row, errorMessage: errorMessage, statusCode: statusCode});
-                });
             };
 
             $scope.save = function(row) {

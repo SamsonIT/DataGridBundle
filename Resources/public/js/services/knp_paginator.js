@@ -158,16 +158,24 @@ drivers['knp-paginator'] = function ($http, $q, $location, $timeout) {
                 abortActiveRequest(); // abort $cancelRequest if running and create a new $cancelRequest.
 
                 var p = $q.defer();
-                return $http.get(generateRoute(data.route, routeParams)).then(function (response) {
-                    var newData = response.data;
-                    self.loading = false;
-                    self.setData(newData, data.transformFn);
+                filterTimeout = $timeout(function () {
+                    $http.get(generateRoute(data.route, routeParams)).success(
+                        function (response) {
+                            var newData = response.data;
+                            self.loading = false;
+                            self.setData(newData, data.transformFn);
 
-                    $location.search(routeParams).replace();
-                    return newData;
-                }, function () {
-                    self.loading = false;
-                });
+                            $location.search(routeParams).replace();
+                            p.resolve();
+                        }
+                    ).error(
+                        function () {
+                            self.loading = false;
+                        }
+                    );
+                }, 250);
+
+                return p.promise;
             },
 
             /**

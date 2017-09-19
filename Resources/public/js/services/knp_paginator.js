@@ -161,7 +161,7 @@ drivers['knp-paginator'] = function ($http, $q, $location, $timeout) {
                 filterTimeout = $timeout(function () {
                     $http.get(generateRoute(data.route, routeParams)).success(
                         function (response) {
-                            var newData = response.data;
+                            var newData = response.data ? response.data : response; // Compatiblity with datagrid2
                             self.loading = false;
                             self.setData(newData, data.transformFn);
 

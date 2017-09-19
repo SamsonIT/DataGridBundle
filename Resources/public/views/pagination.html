@@ -1,4 +1,4 @@
-<div class="pagination" ng-if="pages.length != 1">
+<div class="pagination" ng-if="pages.length > 1">
         <span>
             <span ng-switch on="pagination.currentPage > 1">
                 <a ng-switch-when="true" ng-click="setPage(pagination.currentPage-1)"><span

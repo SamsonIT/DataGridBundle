@@ -513,7 +513,7 @@ angular.module('Samson.DataGrid')
                 });
 
                 $scope.$watch('firstResult + lastResult + filteredResults + totalResults', function() {
-                    $scope.resultData = $interpolate(resultDataText)($scope);
+                    $scope.resultData = ($scope.totalResults > 0) ? $interpolate(resultDataText)($scope) : '';
                 });
             }
         };

@@ -61,6 +61,12 @@ Basically, if you already have an Angular app running, add the module to the dep
 
 <a name="basic-usage"></a>
 
+### Development
+
+For correct deployment, update the version number which serves as a cache buster in
+- Resources/public/js/directives/datagrid.js
+- Resources/views/javascripts.html.twig
+
 ## Basic usage
 
 Adding a datagrid to your webpage is really easy. All you have to do is add the tag to your HTML code:

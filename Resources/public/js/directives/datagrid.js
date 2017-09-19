@@ -68,7 +68,7 @@ angular.module('Samson.DataGrid')
             restrict: 'E',
             transclude: true,
             scope: true,
-            templateUrl: '/bundles/samsondatagrid/views/datagrid.html',
+            templateUrl: '/bundles/samsondatagrid/views/datagrid.html?version=2_3_11',
             replace: true,
             compile: function(tElement, tAttr) {
                 if ('ngRowController' in tAttr) {
@@ -196,8 +196,8 @@ angular.module('Samson.DataGrid')
                 $scope.resultsTemplate = 'datagrid-results.html';
                 $templateCache.put('datagrid-results.html', '<p class="table-info">{{ resultData }}</p>');
                 $scope.driver = 'clientside';
-                $scope.filterTemplate = '/bundles/samsondatagrid/views/filter.html';
-                $scope.paginationTemplate = '/bundles/samsondatagrid/views/pagination.html';
+                $scope.filterTemplate = '/bundles/samsondatagrid/views/filter.html?version=2_3_11';
+                $scope.paginationTemplate = '/bundles/samsondatagrid/views/pagination.html?version=2_3_11';
                 $scope.colgroupTemplate = null;
                 $scope.footerTemplate = null;
 
